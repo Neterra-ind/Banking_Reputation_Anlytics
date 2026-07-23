@@ -17,10 +17,11 @@ import {
 import { StatCard } from '@/components/StatCard'
 import { DataTable } from '@/components/DataTable'
 import { NewsDetailDrawer } from '@/components/NewsDetailDrawer'
+import { TimelineFilter } from '@/components/TimelineFilter'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { RiskBadge, SentimenBadge } from '@/components/ui/Badge'
 import { daftarBerita } from '@/data/mockData'
-import { hitungPerHari, topN } from '@/lib/aggregations'
+import { dalamPeriode, hitungPerHari, topN } from '@/lib/aggregations'
 import { semuaIsu, subIsuByIsu } from '@/types'
 import type { Berita, Isu } from '@/types'
 import { Newspaper, ShieldAlert, Flame, Radio } from 'lucide-react'
@@ -29,6 +30,13 @@ const SENTIMEN_COLOR: Record<string, string> = {
   Positif: '#10b981',
   Netral: '#94a3b8',
   Negatif: '#f43f5e',
+}
+
+const PERIODE_LABEL: Record<string, string> = {
+  '': '30 hari terakhir',
+  '7': '7 hari terakhir',
+  '14': '14 hari terakhir',
+  '30': '30 hari terakhir',
 }
 
 const ISU_TUJUAN: Record<Isu, string> = {
@@ -72,18 +80,28 @@ const columns: ColumnDef<Berita, any>[] = [
 export function IsuDetail() {
   const { id } = useParams<{ id: string }>()
   const [selected, setSelected] = useState<Berita | null>(null)
+  const [periode, setPeriode] = useState('')
 
   const isuValid = id && semuaIsu.includes(id as Isu) ? (id as Isu) : null
   const isu = isuValid ?? 'Bisnis'
 
-  const items = useMemo(() => daftarBerita.filter((b) => b.isu === isu), [isu])
+  const items = useMemo(
+    () =>
+      daftarBerita.filter(
+        (b) => b.isu === isu && (!periode || dalamPeriode(b.tanggal, Number(periode))),
+      ),
+    [isu, periode],
+  )
 
   const volume = items.length
   const risikoTinggi = items.filter((b) => b.riskLevel === 'High' || b.riskLevel === 'Critical').length
   const viral = items.filter((b) => b.isViral).length
   const mediaAktif = useMemo(() => new Set(items.map((b) => b.sumber)).size, [items])
 
-  const trenHarian = useMemo(() => hitungPerHari(items, 30), [items])
+  const trenHarian = useMemo(
+    () => hitungPerHari(items, periode ? Number(periode) : 30),
+    [items, periode],
+  )
   const distribusiSentimen = useMemo(() => {
     const map = new Map<string, number>()
     for (const b of items) map.set(b.sentimen, (map.get(b.sentimen) ?? 0) + 1)
@@ -108,9 +126,12 @@ export function IsuDetail() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Isu {isu}</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">{ISU_TUJUAN[isu]}</p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Isu {isu}</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{ISU_TUJUAN[isu]}</p>
+        </div>
+        <TimelineFilter value={periode} onChange={setPeriode} />
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -122,7 +143,7 @@ export function IsuDetail() {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader title="Tren Waktu" subtitle="Volume berita 30 hari terakhir" />
+          <CardHeader title="Tren Waktu" subtitle={`Volume berita · ${PERIODE_LABEL[periode]}`} />
           <CardContent>
             <ResponsiveContainer width="100%" height={240}>
               <AreaChart data={trenHarian}>
