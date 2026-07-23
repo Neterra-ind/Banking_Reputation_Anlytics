@@ -21,7 +21,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { RiskBadge, SentimenBadge } from '@/components/ui/Badge'
 import { daftarBerita } from '@/data/mockData'
 import { hitungPerHari, topN } from '@/lib/aggregations'
-import { semuaKlaster } from '@/types'
+import { semuaIsu } from '@/types'
 import type { Sentimen } from '@/types'
 
 const SENTIMEN_COLOR: Record<string, string> = {
@@ -64,19 +64,19 @@ export function Dashboard() {
     for (const b of daftarBerita) map.set(b.sentimen, (map.get(b.sentimen) ?? 0) + 1)
     return Array.from(map.entries()).map(([name, value]) => ({ name, value }))
   }, [])
-  const topIssue = useMemo(() => topN(daftarBerita, 'subKlaster', 5), [])
+  const topIssue = useMemo(() => topN(daftarBerita, 'subIsu', 5), [])
   const topMedia = useMemo(() => topN(daftarBerita, 'sumber', 5), [])
   const trendingTopic = useMemo(
     () => [...daftarBerita].filter((b) => b.isViral).sort((a, b) => b.engagement - a.engagement).slice(0, 5),
     [],
   )
 
-  const ringkasanKlaster = useMemo(
+  const ringkasanIsu = useMemo(
     () =>
-      semuaKlaster.map((klaster) => {
-        const items = daftarBerita.filter((b) => b.klaster === klaster)
+      semuaIsu.map((isu) => {
+        const items = daftarBerita.filter((b) => b.isu === isu)
         return {
-          klaster,
+          isu,
           volume: items.length,
           sentimenDominan: sentimenDominan(items.map((i) => i.sentimen)),
           risikoTinggi: items.filter((i) => i.riskLevel === 'High' || i.riskLevel === 'Critical').length,
@@ -105,15 +105,15 @@ export function Dashboard() {
       </div>
 
       <div>
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Ringkasan per Klaster</h2>
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Ringkasan per Isu</h2>
         <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">
-          Klik salah satu klaster untuk melihat dashboard detail.
+          Klik salah satu isu untuk melihat dashboard detail.
         </p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {ringkasanKlaster.map((k) => (
-            <Link key={k.klaster} to={`/klaster/${k.klaster}`}>
+          {ringkasanIsu.map((k) => (
+            <Link key={k.isu} to={`/isu/${k.isu}`}>
               <Card className="p-4 transition-colors hover:border-teal-300 dark:hover:border-teal-700">
-                <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{k.klaster}</p>
+                <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{k.isu}</p>
                 <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">
                   {k.volume}
                 </p>
@@ -181,7 +181,7 @@ export function Dashboard() {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Card>
-          <CardHeader title="Top Issue" subtitle="5 sub-klaster dengan volume tertinggi" />
+          <CardHeader title="Top Issue" subtitle="5 sub-isu dengan volume tertinggi" />
           <CardContent>
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={topIssue} layout="vertical" margin={{ left: 16 }}>

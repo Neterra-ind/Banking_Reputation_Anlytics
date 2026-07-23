@@ -37,3 +37,10 @@ export function topJudul(berita: Berita[], n = 5) {
     .sort((a, b) => b.engagement - a.engagement)
     .slice(0, n)
 }
+
+export function dalamPeriode(tanggal: string, hari: number) {
+  const batas = new Date()
+  batas.setHours(0, 0, 0, 0)
+  batas.setDate(batas.getDate() - (hari - 1))
+  return new Date(tanggal) >= batas
+}

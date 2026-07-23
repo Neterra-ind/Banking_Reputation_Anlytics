@@ -2,11 +2,13 @@ import { useMemo, useState } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { DataTable } from '@/components/DataTable'
 import { FilterSelect } from '@/components/FilterSelect'
+import { TimelineFilter } from '@/components/TimelineFilter'
 import { NewsDetailDrawer } from '@/components/NewsDetailDrawer'
 import { RiskBadge, SentimenBadge, UrgensiBadge } from '@/components/ui/Badge'
 import { Card } from '@/components/ui/Card'
 import { daftarBerita, semuaRiskLevel, semuaSentimen, semuaSumber } from '@/data/mockData'
-import { semuaKlaster } from '@/types'
+import { dalamPeriode } from '@/lib/aggregations'
+import { semuaIsu } from '@/types'
 import type { Berita } from '@/types'
 
 const columns: ColumnDef<Berita, any>[] = [
@@ -24,14 +26,14 @@ const columns: ColumnDef<Berita, any>[] = [
       <div className="max-w-md">
         <p className="font-medium text-slate-800 dark:text-slate-100">{info.getValue<string>()}</p>
         <p className="text-xs text-slate-500 dark:text-slate-400">
-          {info.row.original.sumber} · {info.row.original.subKlaster}
+          {info.row.original.sumber} · {info.row.original.subIsu}
         </p>
       </div>
     ),
   },
   {
-    accessorKey: 'klaster',
-    header: 'Klaster',
+    accessorKey: 'isu',
+    header: 'Isu',
     cell: (info) => (
       <span className="whitespace-nowrap text-slate-600 dark:text-slate-300">
         {info.getValue<string>()}
@@ -63,21 +65,23 @@ const columns: ColumnDef<Berita, any>[] = [
 ]
 
 export function DataBerita() {
-  const [klaster, setKlaster] = useState('')
+  const [isu, setIsu] = useState('')
   const [sentimen, setSentimen] = useState('')
   const [risk, setRisk] = useState('')
   const [sumber, setSumber] = useState('')
+  const [periode, setPeriode] = useState('')
   const [selected, setSelected] = useState<Berita | null>(null)
 
   const filtered = useMemo(() => {
     return daftarBerita.filter(
       (b) =>
-        (!klaster || b.klaster === klaster) &&
+        (!isu || b.isu === isu) &&
         (!sentimen || b.sentimen === sentimen) &&
         (!risk || b.riskLevel === risk) &&
-        (!sumber || b.sumber === sumber),
+        (!sumber || b.sumber === sumber) &&
+        (!periode || dalamPeriode(b.tanggal, Number(periode))),
     )
-  }, [klaster, sentimen, risk, sumber])
+  }, [isu, sentimen, risk, sumber, periode])
 
   return (
     <div className="space-y-4">
@@ -90,7 +94,8 @@ export function DataBerita() {
 
       <Card className="p-4">
         <div className="flex flex-wrap gap-3">
-          <FilterSelect label="Klaster" value={klaster} options={semuaKlaster} onChange={setKlaster} />
+          <TimelineFilter value={periode} onChange={setPeriode} />
+          <FilterSelect label="Isu" value={isu} options={semuaIsu} onChange={setIsu} />
           <FilterSelect label="Sentimen" value={sentimen} options={semuaSentimen} onChange={setSentimen} />
           <FilterSelect label="Risk Level" value={risk} options={semuaRiskLevel} onChange={setRisk} />
           <FilterSelect label="Sumber" value={sumber} options={semuaSumber} onChange={setSumber} />
@@ -101,7 +106,7 @@ export function DataBerita() {
         <DataTable
           data={filtered}
           columns={columns}
-          searchPlaceholder="Cari judul, sumber, sub-klaster..."
+          searchPlaceholder="Cari judul, sumber, sub-isu..."
           onRowClick={setSelected}
         />
       </Card>

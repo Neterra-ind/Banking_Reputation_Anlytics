@@ -19,7 +19,7 @@ export function NewsDetailDrawer({
         <div className="flex items-start justify-between gap-2 border-b border-slate-100 px-5 py-4 dark:border-slate-800">
           <div>
             <p className="text-xs font-medium uppercase tracking-wide text-teal-600 dark:text-teal-400">
-              AI Insight · {berita.klaster} / {berita.subKlaster}
+              AI Insight · {berita.isu} / {berita.subIsu}
             </p>
             <h2 className="mt-1 text-base font-semibold text-slate-900 dark:text-slate-100">
               {berita.judul}

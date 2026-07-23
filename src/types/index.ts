@@ -1,8 +1,8 @@
 // Domain types mengikuti PRD "AI Banking Intelligence Dashboard" (Bank Syariah Indonesia)
 
-export type Klaster = 'Kebijakan' | 'Bisnis' | 'Nasabah' | 'Risiko' | 'Industri'
+export type Isu = 'Kebijakan' | 'Bisnis' | 'Nasabah' | 'Risiko' | 'Industri'
 
-export const semuaKlaster: Klaster[] = [
+export const semuaIsu: Isu[] = [
   'Kebijakan',
   'Bisnis',
   'Nasabah',
@@ -10,8 +10,8 @@ export const semuaKlaster: Klaster[] = [
   'Industri',
 ]
 
-// Sub-klaster sesuai PRD bagian 6 "Ruang Lingkup" per klaster
-export const subKlasterByKlaster: Record<Klaster, string[]> = {
+// Sub-isu sesuai PRD bagian 6 "Ruang Lingkup" per isu
+export const subIsuByIsu: Record<Isu, string[]> = {
   Kebijakan: [
     'Regulasi OJK',
     'Bank Indonesia',
@@ -111,8 +111,8 @@ export interface Berita {
   judul: string
   sumber: string
   jenisMedia: JenisMedia
-  klaster: Klaster
-  subKlaster: string
+  isu: Isu
+  subIsu: string
   sentimen: Sentimen
   riskLevel: RiskLevel
   urgensi: Urgensi
@@ -159,7 +159,7 @@ export interface Alert {
   tanggal: string
   waktu: string
   tipe: TipeAlert
-  klaster: Klaster
+  isu: Isu
   judul: string
   deskripsi: string
   level: RiskLevel

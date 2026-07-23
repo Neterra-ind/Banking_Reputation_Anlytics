@@ -11,26 +11,37 @@ import {
 
 const NAV_ITEMS = [
   { to: '/', label: 'Executive Summary', icon: LayoutDashboard, end: true },
-  { to: '/klaster/Kebijakan', label: 'Klaster Kebijakan', icon: Landmark },
-  { to: '/klaster/Bisnis', label: 'Klaster Bisnis', icon: Landmark },
-  { to: '/klaster/Nasabah', label: 'Klaster Nasabah', icon: Landmark },
-  { to: '/klaster/Risiko', label: 'Klaster Risiko', icon: ShieldAlert },
-  { to: '/klaster/Industri', label: 'Klaster Industri', icon: Landmark },
+  { to: '/isu/Kebijakan', label: 'Isu Kebijakan', icon: Landmark },
+  { to: '/isu/Bisnis', label: 'Isu Bisnis', icon: Landmark },
+  { to: '/isu/Nasabah', label: 'Isu Nasabah', icon: Landmark },
+  { to: '/isu/Risiko', label: 'Isu Risiko', icon: ShieldAlert },
+  { to: '/isu/Industri', label: 'Isu Industri', icon: Landmark },
   { to: '/data-berita', label: 'Data Berita', icon: Newspaper },
   { to: '/kompetitor', label: 'Kompetitor', icon: Trophy },
   { to: '/notifikasi', label: 'Notifikasi', icon: Bell },
 ]
 
+function Brand() {
+  return (
+    <div className="flex items-center gap-2.5 px-2">
+      <img src="/bsi-logo.png" alt="Logo BSI" className="h-9 w-9 object-contain" />
+      <div>
+        <p className="text-sm font-semibold leading-tight text-slate-900 dark:text-slate-100">
+          AI Banking Intelligence Dashboard
+        </p>
+        <p className="text-xs text-slate-500 dark:text-slate-400">Bank Syariah Indonesia</p>
+      </div>
+    </div>
+  )
+}
+
 export function AppLayout() {
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-950 md:flex-row">
       <header className="border-b border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-900 md:hidden">
-        <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-          AI Banking Intelligence Dashboard
-        </p>
-        <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
-          Bank Syariah Indonesia
-        </p>
+        <div className="mb-3">
+          <Brand />
+        </div>
         <nav className="flex gap-1 overflow-x-auto">
           {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
             <NavLink
@@ -54,13 +65,8 @@ export function AppLayout() {
       </header>
 
       <aside className="hidden w-64 shrink-0 border-r border-slate-200 bg-white px-4 py-6 dark:border-slate-800 dark:bg-slate-900 md:block">
-        <div className="mb-8 px-2">
-          <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-            AI Banking Intelligence Dashboard
-          </p>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Bank Syariah Indonesia
-          </p>
+        <div className="mb-8">
+          <Brand />
         </div>
         <nav className="space-y-1">
           {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (

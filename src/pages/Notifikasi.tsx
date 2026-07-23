@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react'
 import { AlertTriangle, Bell, FileWarning, Flame, TrendingUp, Wifi } from 'lucide-react'
 import { FilterSelect } from '@/components/FilterSelect'
+import { TimelineFilter } from '@/components/TimelineFilter'
 import { Card, CardContent } from '@/components/ui/Card'
 import { RiskBadge } from '@/components/ui/Badge'
 import { daftarAlert } from '@/data/mockData'
-import { semuaKlaster } from '@/types'
+import { dalamPeriode } from '@/lib/aggregations'
+import { semuaIsu } from '@/types'
 import type { TipeAlert } from '@/types'
 
 const TIPE_ICON: Record<TipeAlert, typeof Bell> = {
@@ -28,18 +30,24 @@ const semuaTipe: TipeAlert[] = [
 const levelOrder = { Critical: 0, High: 1, Medium: 2, Low: 3 }
 
 export function Notifikasi() {
-  const [klaster, setKlaster] = useState('')
+  const [isu, setIsu] = useState('')
   const [tipe, setTipe] = useState('')
+  const [periode, setPeriode] = useState('')
 
   const filtered = useMemo(() => {
     return daftarAlert
-      .filter((a) => (!klaster || a.klaster === klaster) && (!tipe || a.tipe === tipe))
+      .filter(
+        (a) =>
+          (!isu || a.isu === isu) &&
+          (!tipe || a.tipe === tipe) &&
+          (!periode || dalamPeriode(a.tanggal, Number(periode))),
+      )
       .sort((a, b) => {
         const dateCompare = `${b.tanggal}T${b.waktu}`.localeCompare(`${a.tanggal}T${a.waktu}`)
         if (dateCompare !== 0) return dateCompare
         return levelOrder[a.level] - levelOrder[b.level]
       })
-  }, [klaster, tipe])
+  }, [isu, tipe, periode])
 
   return (
     <div className="space-y-4">
@@ -52,7 +60,8 @@ export function Notifikasi() {
 
       <Card className="p-4">
         <div className="flex flex-wrap gap-3">
-          <FilterSelect label="Klaster" value={klaster} options={semuaKlaster} onChange={setKlaster} />
+          <TimelineFilter value={periode} onChange={setPeriode} />
+          <FilterSelect label="Isu" value={isu} options={semuaIsu} onChange={setIsu} />
           <FilterSelect label="Tipe Alert" value={tipe} options={semuaTipe} onChange={setTipe} />
         </div>
       </Card>
@@ -76,7 +85,7 @@ export function Notifikasi() {
                   </div>
                   <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{alert.deskripsi}</p>
                   <p className="mt-1.5 text-xs text-slate-400">
-                    {alert.tipe} · Klaster {alert.klaster} · {alert.tanggal} {alert.waktu}
+                    {alert.tipe} · Isu {alert.isu} · {alert.tanggal} {alert.waktu}
                   </p>
                 </div>
               </CardContent>

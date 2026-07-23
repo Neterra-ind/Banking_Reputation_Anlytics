@@ -2,7 +2,7 @@ import { Route, Routes } from 'react-router-dom'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { Dashboard } from '@/pages/Dashboard'
 import { DataBerita } from '@/pages/DataBerita'
-import { KlasterDetail } from '@/pages/KlasterDetail'
+import { IsuDetail } from '@/pages/IsuDetail'
 import { Kompetitor } from '@/pages/Kompetitor'
 import { Notifikasi } from '@/pages/Notifikasi'
 
@@ -11,7 +11,7 @@ function App() {
     <Routes>
       <Route element={<AppLayout />}>
         <Route path="/" element={<Dashboard />} />
-        <Route path="/klaster/:id" element={<KlasterDetail />} />
+        <Route path="/isu/:id" element={<IsuDetail />} />
         <Route path="/data-berita" element={<DataBerita />} />
         <Route path="/kompetitor" element={<Kompetitor />} />
         <Route path="/notifikasi" element={<Notifikasi />} />

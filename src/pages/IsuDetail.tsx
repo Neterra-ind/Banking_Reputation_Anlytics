@@ -21,8 +21,8 @@ import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { RiskBadge, SentimenBadge } from '@/components/ui/Badge'
 import { daftarBerita } from '@/data/mockData'
 import { hitungPerHari, topN } from '@/lib/aggregations'
-import { semuaKlaster, subKlasterByKlaster } from '@/types'
-import type { Berita, Klaster } from '@/types'
+import { semuaIsu, subIsuByIsu } from '@/types'
+import type { Berita, Isu } from '@/types'
 import { Newspaper, ShieldAlert, Flame, Radio } from 'lucide-react'
 
 const SENTIMEN_COLOR: Record<string, string> = {
@@ -31,7 +31,7 @@ const SENTIMEN_COLOR: Record<string, string> = {
   Negatif: '#f43f5e',
 }
 
-const KLASTER_TUJUAN: Record<Klaster, string> = {
+const ISU_TUJUAN: Record<Isu, string> = {
   Kebijakan: 'Memantau seluruh kebijakan yang dapat memengaruhi operasional maupun bisnis BSI.',
   Bisnis: 'Memantau perkembangan bisnis dan produk BSI.',
   Nasabah: 'Mengukur persepsi masyarakat terhadap BSI.',
@@ -52,7 +52,7 @@ const columns: ColumnDef<Berita, any>[] = [
       <div className="max-w-md">
         <p className="font-medium text-slate-800 dark:text-slate-100">{info.getValue<string>()}</p>
         <p className="text-xs text-slate-500 dark:text-slate-400">
-          {info.row.original.sumber} · {info.row.original.subKlaster}
+          {info.row.original.sumber} · {info.row.original.subIsu}
         </p>
       </div>
     ),
@@ -69,14 +69,14 @@ const columns: ColumnDef<Berita, any>[] = [
   },
 ]
 
-export function KlasterDetail() {
+export function IsuDetail() {
   const { id } = useParams<{ id: string }>()
   const [selected, setSelected] = useState<Berita | null>(null)
 
-  const klasterValid = id && semuaKlaster.includes(id as Klaster) ? (id as Klaster) : null
-  const klaster = klasterValid ?? 'Bisnis'
+  const isuValid = id && semuaIsu.includes(id as Isu) ? (id as Isu) : null
+  const isu = isuValid ?? 'Bisnis'
 
-  const items = useMemo(() => daftarBerita.filter((b) => b.klaster === klaster), [klaster])
+  const items = useMemo(() => daftarBerita.filter((b) => b.isu === isu), [isu])
 
   const volume = items.length
   const risikoTinggi = items.filter((b) => b.riskLevel === 'High' || b.riskLevel === 'Critical').length
@@ -90,7 +90,7 @@ export function KlasterDetail() {
     return Array.from(map.entries()).map(([name, value]) => ({ name, value }))
   }, [items])
 
-  const topikUtama = useMemo(() => topN(items, 'subKlaster', subKlasterByKlaster[klaster].length), [items, klaster])
+  const topikUtama = useMemo(() => topN(items, 'subIsu', subIsuByIsu[isu].length), [items, isu])
   const topMedia = useMemo(() => topN(items, 'sumber', 5), [items])
 
   const insightItems = useMemo(
@@ -102,15 +102,15 @@ export function KlasterDetail() {
     [items],
   )
 
-  if (!klasterValid) {
+  if (!isuValid) {
     return <Navigate to="/" replace />
   }
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Klaster {klaster}</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">{KLASTER_TUJUAN[klaster]}</p>
+        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Isu {isu}</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{ISU_TUJUAN[isu]}</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -127,7 +127,7 @@ export function KlasterDetail() {
             <ResponsiveContainer width="100%" height={240}>
               <AreaChart data={trenHarian}>
                 <defs>
-                  <linearGradient id="colorKlaster" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="colorIsu" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#0d9488" stopOpacity={0.4} />
                     <stop offset="95%" stopColor="#0d9488" stopOpacity={0} />
                   </linearGradient>
@@ -136,7 +136,7 @@ export function KlasterDetail() {
                 <XAxis dataKey="tanggal" fontSize={12} tickLine={false} />
                 <YAxis fontSize={12} tickLine={false} allowDecimals={false} />
                 <Tooltip />
-                <Area type="monotone" dataKey="jumlah" stroke="#0d9488" fill="url(#colorKlaster)" strokeWidth={2} />
+                <Area type="monotone" dataKey="jumlah" stroke="#0d9488" fill="url(#colorIsu)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
@@ -161,7 +161,7 @@ export function KlasterDetail() {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader title="Topik Utama" subtitle="Frekuensi sub-klaster (word cloud sederhana)" />
+          <CardHeader title="Topik Utama" subtitle="Frekuensi sub-isu (word cloud sederhana)" />
           <CardContent>
             <div className="flex flex-wrap gap-2">
               {topikUtama.map((t) => {
@@ -197,7 +197,7 @@ export function KlasterDetail() {
       </div>
 
       <Card>
-        <CardHeader title="AI Summary & Recommendation" subtitle="Ringkasan otomatis dari isu berisiko tinggi di klaster ini" />
+        <CardHeader title="AI Summary & Recommendation" subtitle="Ringkasan otomatis dari isu berisiko tinggi di kategori ini" />
         <CardContent className="space-y-4">
           {insightItems.length === 0 && (
             <p className="text-sm text-slate-400">Tidak ada isu berisiko tinggi yang perlu disorot saat ini.</p>

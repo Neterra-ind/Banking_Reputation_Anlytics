@@ -1,14 +1,14 @@
 import type {
   Alert,
   Berita,
-  Klaster,
+  Isu,
   Kompetitor,
   RiskLevel,
   Sentimen,
   TipeAlert,
   Urgensi,
 } from '@/types'
-import { semuaKlaster, semuaMediaMassa, semuaMediaSosial, subKlasterByKlaster } from '@/types'
+import { semuaIsu, semuaMediaMassa, semuaMediaSosial, subIsuByIsu } from '@/types'
 
 // Seeded PRNG (mulberry32) supaya data mock konsisten di setiap reload.
 function mulberry32(seed: number) {
@@ -90,7 +90,7 @@ const INDUSTRI_TEMPLATES = [
   (s: string) => `Industri Perbankan Syariah Hadapi Tantangan ${s}`,
 ]
 
-const TEMPLATES_BY_KLASTER: Record<Klaster, ((s: string) => string)[]> = {
+const TEMPLATES_BY_ISU: Record<Isu, ((s: string) => string)[]> = {
   Kebijakan: KEBIJAKAN_TEMPLATES,
   Bisnis: BISNIS_TEMPLATES,
   Nasabah: NASABAH_TEMPLATES,
@@ -182,9 +182,9 @@ function buatBerita(): Berita[] {
   const list: Berita[] = []
   let counter = 1
 
-  for (const klaster of semuaKlaster) {
-    const subs = subKlasterByKlaster[klaster]
-    const templates = TEMPLATES_BY_KLASTER[klaster]
+  for (const isu of semuaIsu) {
+    const subs = subIsuByIsu[isu]
+    const templates = TEMPLATES_BY_ISU[isu]
     const jumlah = 44
 
     for (let i = 0; i < jumlah; i++) {
@@ -219,7 +219,7 @@ function buatBerita(): Berita[] {
       const tanggal = isoDaysAgo(randomInt(0, 29))
 
       const kompetitorTerkait =
-        (klaster === 'Bisnis' || klaster === 'Industri') && rand() < 0.18 ? pick(kompetitorNama) : undefined
+        (isu === 'Bisnis' || isu === 'Industri') && rand() < 0.18 ? pick(kompetitorNama) : undefined
 
       list.push({
         id: `BR-${String(counter).padStart(4, '0')}`,
@@ -227,8 +227,8 @@ function buatBerita(): Berita[] {
         judul,
         sumber,
         jenisMedia,
-        klaster,
-        subKlaster: sub,
+        isu,
+        subIsu: sub,
         sentimen,
         riskLevel,
         urgensi,
@@ -239,7 +239,7 @@ function buatBerita(): Berita[] {
         peluangBisnis: pick(peluangBisnisPool),
         stakeholderTerkait: sampleN(stakeholderPool, randomInt(1, 3)),
         unitKerjaTerdampak: sampleN(unitKerjaPool, randomInt(1, 2)),
-        ringkasanAI: `Pemberitaan mengenai ${sub.toLowerCase()} pada klaster ${klaster} dengan sentimen ${sentimen.toLowerCase()} dan tingkat risiko ${riskLevel}. Isu ini perlu ditindaklanjuti oleh unit terkait sesuai rekomendasi AI.`,
+        ringkasanAI: `Pemberitaan mengenai ${sub.toLowerCase()} pada isu ${isu} dengan sentimen ${sentimen.toLowerCase()} dan tingkat risiko ${riskLevel}. Isu ini perlu ditindaklanjuti oleh unit terkait sesuai rekomendasi AI.`,
         rekomendasiAI: sampleN(rekomendasiPool, randomInt(1, 3)),
         kompetitorTerkait,
         url: `https://contoh-media.id/berita/${counter}`,
@@ -388,73 +388,73 @@ export const daftarKompetitor: Kompetitor[] = [
   },
 ]
 
-const alertTemplates: { tipe: TipeAlert; klaster: Klaster; judul: string; deskripsi: string; level: RiskLevel }[] = [
+const alertTemplates: { tipe: TipeAlert; isu: Isu; judul: string; deskripsi: string; level: RiskLevel }[] = [
   {
     tipe: 'Lonjakan Sentimen Negatif',
-    klaster: 'Nasabah',
+    isu: 'Nasabah',
     judul: 'Lonjakan sentimen negatif terkait keluhan layanan mobile banking',
     deskripsi: 'Volume percakapan negatif naik 3x lipat dalam 6 jam terakhir di media sosial.',
     level: 'High',
   },
   {
     tipe: 'Isu Viral',
-    klaster: 'Nasabah',
+    isu: 'Nasabah',
     judul: 'Unggahan keluhan nasabah viral di X dengan lebih dari 20 ribu interaksi',
     deskripsi: 'Thread keluhan nasabah tentang gangguan transaksi menjadi trending topic lokal.',
     level: 'Critical',
   },
   {
     tipe: 'Regulasi Baru',
-    klaster: 'Kebijakan',
+    isu: 'Kebijakan',
     judul: 'OJK menerbitkan surat edaran baru terkait perlindungan data nasabah',
     deskripsi: 'Aturan baru berpotensi memengaruhi proses onboarding digital BSI.',
     level: 'Medium',
   },
   {
     tipe: 'Gangguan Layanan Digital',
-    klaster: 'Bisnis',
+    isu: 'Bisnis',
     judul: 'Laporan gangguan aplikasi BYOND dari sejumlah pengguna',
     deskripsi: 'Beberapa nasabah melaporkan kegagalan transaksi pada aplikasi mobile banking.',
     level: 'High',
   },
   {
     tipe: 'Trending Topic',
-    klaster: 'Industri',
+    isu: 'Industri',
     judul: 'Nama BSI masuk trending topic X terkait kenaikan BI Rate',
     deskripsi: 'Diskusi publik meningkat seputar dampak kebijakan suku bunga terhadap perbankan syariah.',
     level: 'Low',
   },
   {
     tipe: 'Potensi Krisis',
-    klaster: 'Risiko',
+    isu: 'Risiko',
     judul: 'Indikasi awal isu hoaks penipuan mengatasnamakan BSI',
     deskripsi: 'Ditemukan pesan berantai mencatut nama BSI untuk modus penipuan transfer dana.',
     level: 'Critical',
   },
   {
     tipe: 'Lonjakan Sentimen Negatif',
-    klaster: 'Risiko',
+    isu: 'Risiko',
     judul: 'Sentimen negatif meningkat terkait pemberitaan dugaan fraud',
     deskripsi: 'Beberapa portal berita ekonomi memberitakan dugaan kasus fraud di industri perbankan syariah.',
     level: 'High',
   },
   {
     tipe: 'Regulasi Baru',
-    klaster: 'Kebijakan',
+    isu: 'Kebijakan',
     judul: 'DSN-MUI merilis fatwa baru terkait produk pembiayaan syariah',
     deskripsi: 'Fatwa baru berpotensi memerlukan penyesuaian pada beberapa produk pembiayaan BSI.',
     level: 'Medium',
   },
   {
     tipe: 'Trending Topic',
-    klaster: 'Bisnis',
+    isu: 'Bisnis',
     judul: 'Kampanye promo Umrah BSI ramai dibicarakan di media sosial',
     deskripsi: 'Engagement positif meningkat signifikan terkait promo pembiayaan Umrah.',
     level: 'Low',
   },
   {
     tipe: 'Isu Viral',
-    klaster: 'Industri',
+    isu: 'Industri',
     judul: 'Perbandingan bunga tabungan bank digital ramai dibahas netizen',
     deskripsi: 'Perbincangan publik membandingkan produk tabungan BSI dengan bank digital kompetitor.',
     level: 'Medium',
