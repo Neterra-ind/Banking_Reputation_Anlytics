@@ -17,7 +17,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { Flame, MessageSquare, Newspaper, Radio, ShieldAlert, Sparkles } from 'lucide-react'
+import { Flame, MessageSquare, Newspaper, Radio, ShieldAlert } from 'lucide-react'
 import { StatCard } from '@/components/StatCard'
 import { TimelineFilter } from '@/components/TimelineFilter'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
@@ -72,13 +72,6 @@ export function Dashboard() {
   )
   const totalRisiko = useMemo(
     () => dataTerfilter.filter((b) => b.riskLevel === 'High' || b.riskLevel === 'Critical').length,
-    [dataTerfilter],
-  )
-  const totalOpportunity = useMemo(
-    () =>
-      dataTerfilter.filter(
-        (b) => b.peluangBisnis !== 'Tidak ada peluang bisnis signifikan yang teridentifikasi.',
-      ).length,
     [dataTerfilter],
   )
   const sentimenNegatifPct = useMemo(
@@ -138,12 +131,11 @@ export function Dashboard() {
         <TimelineFilter value={periode} onChange={setPeriode} />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Total Berita" value={totalBerita} icon={Newspaper} />
         <StatCard label="Total Percakapan Medsos" value={totalPercakapan} icon={MessageSquare} />
         <StatCard label="Sentimen Negatif" value={`${sentimenNegatifPct}%`} icon={Radio} tone="negative" />
         <StatCard label="Risiko Tinggi/Kritis" value={totalRisiko} icon={ShieldAlert} tone="warning" />
-        <StatCard label="Peluang Bisnis Teridentifikasi" value={totalOpportunity} icon={Sparkles} tone="positive" />
       </div>
 
       <div>
