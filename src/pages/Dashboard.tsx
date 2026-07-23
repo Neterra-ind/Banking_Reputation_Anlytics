@@ -8,6 +8,8 @@ import {
   CartesianGrid,
   Cell,
   Legend,
+  Line,
+  LineChart,
   Pie,
   PieChart,
   ResponsiveContainer,
@@ -21,9 +23,19 @@ import { TimelineFilter } from '@/components/TimelineFilter'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { RiskBadge, SentimenBadge } from '@/components/ui/Badge'
 import { daftarBerita } from '@/data/mockData'
-import { dalamPeriode, hitungPerHari, topN } from '@/lib/aggregations'
+import {
+  bandingkanPerIsu,
+  cocokPeriode,
+  hitungPerHari,
+  hitungTrenPerIsu,
+  hitungTrenRange,
+  labelPeriode,
+  PERIODE_DEFAULT,
+  topN,
+} from '@/lib/aggregations'
+import type { PeriodeValue } from '@/lib/aggregations'
 import { semuaIsu } from '@/types'
-import type { Sentimen } from '@/types'
+import type { Isu, Sentimen } from '@/types'
 
 const SENTIMEN_COLOR: Record<string, string> = {
   Positif: '#10b981',
@@ -31,11 +43,12 @@ const SENTIMEN_COLOR: Record<string, string> = {
   Negatif: '#f43f5e',
 }
 
-const PERIODE_LABEL: Record<string, string> = {
-  '': '30 hari terakhir',
-  '7': '7 hari terakhir',
-  '14': '14 hari terakhir',
-  '30': '30 hari terakhir',
+const ISU_COLOR: Record<Isu, string> = {
+  Kebijakan: '#0d9488',
+  Bisnis: '#6366f1',
+  Nasabah: '#f59e0b',
+  Risiko: '#f43f5e',
+  Industri: '#8b5cf6',
 }
 
 function sentimenDominan(sentimenList: Sentimen[]): Sentimen {
@@ -45,10 +58,10 @@ function sentimenDominan(sentimenList: Sentimen[]): Sentimen {
 }
 
 export function Dashboard() {
-  const [periode, setPeriode] = useState('')
+  const [periode, setPeriode] = useState<PeriodeValue>(PERIODE_DEFAULT)
 
   const dataTerfilter = useMemo(
-    () => (periode ? daftarBerita.filter((b) => dalamPeriode(b.tanggal, Number(periode))) : daftarBerita),
+    () => daftarBerita.filter((b) => cocokPeriode(b.tanggal, periode)),
     [periode],
   )
 
@@ -76,10 +89,12 @@ export function Dashboard() {
     [dataTerfilter, totalBerita],
   )
 
-  const trenHarian = useMemo(
-    () => hitungPerHari(dataTerfilter, periode ? Number(periode) : 30),
-    [dataTerfilter, periode],
-  )
+  const trenHarian = useMemo(() => {
+    if (periode.preset === 'custom' && periode.dari && periode.sampai) {
+      return hitungTrenRange(dataTerfilter, periode.dari, periode.sampai)
+    }
+    return hitungPerHari(dataTerfilter, periode.preset && periode.preset !== 'custom' ? Number(periode.preset) : 30)
+  }, [dataTerfilter, periode])
   const distribusiSentimen = useMemo(() => {
     const map = new Map<string, number>()
     for (const b of dataTerfilter) map.set(b.sentimen, (map.get(b.sentimen) ?? 0) + 1)
@@ -106,6 +121,9 @@ export function Dashboard() {
     [dataTerfilter],
   )
 
+  const trenPerIsu = useMemo(() => hitungTrenPerIsu(dataTerfilter, semuaIsu, periode), [dataTerfilter, periode])
+  const perbandinganIsu = useMemo(() => bandingkanPerIsu(dataTerfilter, semuaIsu), [dataTerfilter])
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -114,7 +132,7 @@ export function Dashboard() {
             Executive Summary
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Ringkasan monitoring media massa dan media sosial BSI {PERIODE_LABEL[periode]}.
+            Ringkasan monitoring media massa dan media sosial BSI {labelPeriode(periode)}.
           </p>
         </div>
         <TimelineFilter value={periode} onChange={setPeriode} />
@@ -156,9 +174,92 @@ export function Dashboard() {
         </div>
       </div>
 
+      <div>
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Perbandingan Antar Isu</h2>
+        <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">
+          Bandingkan eksposur Nasabah, Kebijakan, Bisnis, Risiko, dan Industri secara langsung.
+        </p>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <Card>
+            <CardHeader title="Tren Volume per Isu" subtitle={`Perbandingan tren harian · ${labelPeriode(periode)}`} />
+            <CardContent>
+              <ResponsiveContainer width="100%" height={280}>
+                <LineChart data={trenPerIsu}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="tanggal" fontSize={12} tickLine={false} />
+                  <YAxis fontSize={12} tickLine={false} allowDecimals={false} />
+                  <Tooltip />
+                  <Legend />
+                  {semuaIsu.map((isu) => (
+                    <Line
+                      key={isu}
+                      type="monotone"
+                      dataKey={isu}
+                      stroke={ISU_COLOR[isu]}
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader title="Sentimen per Isu" subtitle="Komposisi sentimen tiap isu" />
+            <CardContent>
+              <ResponsiveContainer width="100%" height={280}>
+                <BarChart data={perbandinganIsu}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="isu" fontSize={12} tickLine={false} />
+                  <YAxis fontSize={12} tickLine={false} allowDecimals={false} />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="Positif" stackId="sentimen" fill={SENTIMEN_COLOR.Positif} />
+                  <Bar dataKey="Netral" stackId="sentimen" fill={SENTIMEN_COLOR.Netral} />
+                  <Bar dataKey="Negatif" stackId="sentimen" fill={SENTIMEN_COLOR.Negatif} radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <Card>
+            <CardHeader title="Risiko Tinggi/Kritis per Isu" />
+            <CardContent>
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={perbandinganIsu} layout="vertical" margin={{ left: 16 }}>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                  <XAxis type="number" fontSize={12} allowDecimals={false} />
+                  <YAxis type="category" dataKey="isu" fontSize={12} width={80} />
+                  <Tooltip />
+                  <Bar dataKey="risikoTinggi" fill="#f97316" radius={[0, 4, 4, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader title="Engagement per Isu" subtitle="Total interaksi media sosial" />
+            <CardContent>
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={perbandinganIsu} layout="vertical" margin={{ left: 16 }}>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                  <XAxis type="number" fontSize={12} allowDecimals={false} />
+                  <YAxis type="category" dataKey="isu" fontSize={12} width={80} />
+                  <Tooltip formatter={(v) => Number(v).toLocaleString('id-ID')} />
+                  <Bar dataKey="engagement" fill="#6366f1" radius={[0, 4, 4, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader title="Tren Berita" subtitle={`Jumlah berita per hari · ${PERIODE_LABEL[periode]}`} />
+          <CardHeader title="Tren Berita" subtitle={`Jumlah berita per hari · ${labelPeriode(periode)}`} />
           <CardContent>
             <ResponsiveContainer width="100%" height={260}>
               <AreaChart data={trenHarian}>

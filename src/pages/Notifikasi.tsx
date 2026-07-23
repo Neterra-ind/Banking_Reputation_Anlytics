@@ -5,7 +5,8 @@ import { TimelineFilter } from '@/components/TimelineFilter'
 import { Card, CardContent } from '@/components/ui/Card'
 import { RiskBadge } from '@/components/ui/Badge'
 import { daftarAlert } from '@/data/mockData'
-import { dalamPeriode } from '@/lib/aggregations'
+import { cocokPeriode, PERIODE_DEFAULT } from '@/lib/aggregations'
+import type { PeriodeValue } from '@/lib/aggregations'
 import { semuaIsu } from '@/types'
 import type { TipeAlert } from '@/types'
 
@@ -32,16 +33,11 @@ const levelOrder = { Critical: 0, High: 1, Medium: 2, Low: 3 }
 export function Notifikasi() {
   const [isu, setIsu] = useState('')
   const [tipe, setTipe] = useState('')
-  const [periode, setPeriode] = useState('')
+  const [periode, setPeriode] = useState<PeriodeValue>(PERIODE_DEFAULT)
 
   const filtered = useMemo(() => {
     return daftarAlert
-      .filter(
-        (a) =>
-          (!isu || a.isu === isu) &&
-          (!tipe || a.tipe === tipe) &&
-          (!periode || dalamPeriode(a.tanggal, Number(periode))),
-      )
+      .filter((a) => (!isu || a.isu === isu) && (!tipe || a.tipe === tipe) && cocokPeriode(a.tanggal, periode))
       .sort((a, b) => {
         const dateCompare = `${b.tanggal}T${b.waktu}`.localeCompare(`${a.tanggal}T${a.waktu}`)
         if (dateCompare !== 0) return dateCompare

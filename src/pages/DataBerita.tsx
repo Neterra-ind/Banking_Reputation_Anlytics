@@ -7,7 +7,8 @@ import { NewsDetailDrawer } from '@/components/NewsDetailDrawer'
 import { RiskBadge, SentimenBadge, UrgensiBadge } from '@/components/ui/Badge'
 import { Card } from '@/components/ui/Card'
 import { daftarBerita, semuaRiskLevel, semuaSentimen, semuaSumber } from '@/data/mockData'
-import { dalamPeriode } from '@/lib/aggregations'
+import { cocokPeriode, PERIODE_DEFAULT } from '@/lib/aggregations'
+import type { PeriodeValue } from '@/lib/aggregations'
 import { semuaIsu } from '@/types'
 import type { Berita } from '@/types'
 
@@ -69,7 +70,7 @@ export function DataBerita() {
   const [sentimen, setSentimen] = useState('')
   const [risk, setRisk] = useState('')
   const [sumber, setSumber] = useState('')
-  const [periode, setPeriode] = useState('')
+  const [periode, setPeriode] = useState<PeriodeValue>(PERIODE_DEFAULT)
   const [selected, setSelected] = useState<Berita | null>(null)
 
   const filtered = useMemo(() => {
@@ -79,7 +80,7 @@ export function DataBerita() {
         (!sentimen || b.sentimen === sentimen) &&
         (!risk || b.riskLevel === risk) &&
         (!sumber || b.sumber === sumber) &&
-        (!periode || dalamPeriode(b.tanggal, Number(periode))),
+        cocokPeriode(b.tanggal, periode),
     )
   }, [isu, sentimen, risk, sumber, periode])
 
