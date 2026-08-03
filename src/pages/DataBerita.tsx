@@ -4,9 +4,9 @@ import { DataTable } from '@/components/DataTable'
 import { FilterSelect } from '@/components/FilterSelect'
 import { TimelineFilter } from '@/components/TimelineFilter'
 import { NewsDetailDrawer } from '@/components/NewsDetailDrawer'
-import { RiskBadge, SentimenBadge, UrgensiBadge } from '@/components/ui/Badge'
+import { SentimenBadge, UrgensiBadge } from '@/components/ui/Badge'
 import { Card } from '@/components/ui/Card'
-import { daftarBerita, semuaRiskLevel, semuaSentimen, semuaSumber } from '@/data/mockData'
+import { daftarBerita, semuaJenisMedia, semuaSentimen, semuaSumber } from '@/data/mockData'
 import { cocokPeriode, PERIODE_DEFAULT } from '@/lib/aggregations'
 import type { PeriodeValue } from '@/lib/aggregations'
 import { semuaIsu } from '@/types'
@@ -47,11 +47,6 @@ const columns: ColumnDef<Berita, any>[] = [
     cell: (info) => <SentimenBadge value={info.getValue()} />,
   },
   {
-    accessorKey: 'riskLevel',
-    header: 'Risk Level',
-    cell: (info) => <RiskBadge value={info.getValue()} />,
-  },
-  {
     accessorKey: 'urgensi',
     header: 'Urgensi',
     cell: (info) => <UrgensiBadge value={info.getValue()} />,
@@ -68,8 +63,8 @@ const columns: ColumnDef<Berita, any>[] = [
 export function DataBerita() {
   const [isu, setIsu] = useState('')
   const [sentimen, setSentimen] = useState('')
-  const [risk, setRisk] = useState('')
   const [sumber, setSumber] = useState('')
+  const [jenisMedia, setJenisMedia] = useState('')
   const [periode, setPeriode] = useState<PeriodeValue>(PERIODE_DEFAULT)
   const [selected, setSelected] = useState<Berita | null>(null)
 
@@ -78,11 +73,11 @@ export function DataBerita() {
       (b) =>
         (!isu || b.isu === isu) &&
         (!sentimen || b.sentimen === sentimen) &&
-        (!risk || b.riskLevel === risk) &&
         (!sumber || b.sumber === sumber) &&
+        (!jenisMedia || b.jenisMedia === jenisMedia) &&
         cocokPeriode(b.tanggal, periode),
     )
-  }, [isu, sentimen, risk, sumber, periode])
+  }, [isu, sentimen, sumber, jenisMedia, periode])
 
   return (
     <div className="space-y-4">
@@ -96,9 +91,9 @@ export function DataBerita() {
       <Card className="p-4">
         <div className="flex flex-wrap gap-3">
           <TimelineFilter value={periode} onChange={setPeriode} />
+          <FilterSelect label="Sumber Data" value={jenisMedia} options={[...semuaJenisMedia]} onChange={setJenisMedia} />
           <FilterSelect label="Isu" value={isu} options={semuaIsu} onChange={setIsu} />
           <FilterSelect label="Sentimen" value={sentimen} options={semuaSentimen} onChange={setSentimen} />
-          <FilterSelect label="Risk Level" value={risk} options={semuaRiskLevel} onChange={setRisk} />
           <FilterSelect label="Sumber" value={sumber} options={semuaSumber} onChange={setSumber} />
         </div>
       </Card>

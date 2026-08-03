@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 import { AppLayout } from '@/components/layout/AppLayout'
+import { BrandPerception } from '@/pages/BrandPerception'
 import { Dashboard } from '@/pages/Dashboard'
 import { DataBerita } from '@/pages/DataBerita'
 import { IsuDetail } from '@/pages/IsuDetail'
@@ -13,6 +14,7 @@ function App() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/isu/:id" element={<IsuDetail />} />
         <Route path="/data-berita" element={<DataBerita />} />
+        <Route path="/brand-perception" element={<BrandPerception />} />
         <Route path="/kompetitor" element={<Kompetitor />} />
         <Route path="/notifikasi" element={<Notifikasi />} />
       </Route>

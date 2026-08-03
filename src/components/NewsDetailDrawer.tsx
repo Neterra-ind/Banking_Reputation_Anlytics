@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { X } from 'lucide-react'
-import { RiskBadge, SentimenBadge, UrgensiBadge } from '@/components/ui/Badge'
+import { SentimenBadge, UrgensiBadge } from '@/components/ui/Badge'
 import type { Berita } from '@/types'
 
 export function NewsDetailDrawer({
@@ -40,7 +40,6 @@ export function NewsDetailDrawer({
         <div className="flex-1 space-y-5 px-5 py-5">
           <div className="flex flex-wrap gap-2">
             <SentimenBadge value={berita.sentimen} />
-            <RiskBadge value={berita.riskLevel} />
             <UrgensiBadge value={berita.urgensi} />
             {berita.isViral && (
               <span className="inline-flex items-center rounded-full bg-fuchsia-50 px-2.5 py-0.5 text-xs font-medium text-fuchsia-700 ring-1 ring-inset ring-fuchsia-600/20 dark:bg-fuchsia-500/10 dark:text-fuchsia-400">

@@ -21,14 +21,12 @@ export function hitungPerHari(berita: Berita[], hari = 14) {
 export function bandingkanPerIsu(berita: Berita[], isuList: Isu[]) {
   return isuList.map((isu) => {
     const items = berita.filter((b) => b.isu === isu)
-    const risikoTinggi = items.filter((b) => b.riskLevel === 'High' || b.riskLevel === 'Critical').length
     return {
       isu,
       volume: items.length,
       Positif: items.filter((b) => b.sentimen === 'Positif').length,
       Netral: items.filter((b) => b.sentimen === 'Netral').length,
       Negatif: items.filter((b) => b.sentimen === 'Negatif').length,
-      risikoTinggi,
       engagement: items.reduce((sum, b) => sum + b.engagement, 0),
     }
   })

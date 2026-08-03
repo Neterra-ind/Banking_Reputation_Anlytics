@@ -1,4 +1,4 @@
-# AI Banking Intelligence Dashboard
+# Banking Reputational Analytics
 
 Prototype dashboard monitoring media massa & media sosial, klasterisasi isu bisnis, analisis sentimen, deteksi risiko reputasi, dan benchmarking kompetitor untuk **Bank Syariah Indonesia (BSI)** — berdasarkan PRD "AI Banking Intelligence Dashboard".
 

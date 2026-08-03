@@ -1,18 +1,15 @@
-// Domain types mengikuti PRD "AI Banking Intelligence Dashboard" (Bank Syariah Indonesia)
+// Domain types mengikuti PRD "Banking Reputational Analytics" (Bank Syariah Indonesia)
 
-export type Isu = 'Kebijakan' | 'Bisnis' | 'Nasabah' | 'Risiko' | 'Industri'
+export type Isu = 'Perbankan' | 'BSI'
 
 export const semuaIsu: Isu[] = [
-  'Kebijakan',
-  'Bisnis',
-  'Nasabah',
-  'Risiko',
-  'Industri',
+  'Perbankan',
+  'BSI',
 ]
 
 // Sub-isu sesuai PRD bagian 6 "Ruang Lingkup" per isu
 export const subIsuByIsu: Record<Isu, string[]> = {
-  Kebijakan: [
+  Perbankan: [
     'Regulasi OJK',
     'Bank Indonesia',
     'DSN-MUI',
@@ -24,7 +21,7 @@ export const subIsuByIsu: Record<Isu, string[]> = {
     'ESG',
     'Sustainability',
   ],
-  Bisnis: [
+  BSI: [
     'Tabungan',
     'Pembiayaan',
     'UMKM',
@@ -40,44 +37,11 @@ export const subIsuByIsu: Record<Isu, string[]> = {
     'Kinerja Keuangan',
     'Transformasi Digital',
   ],
-  Nasabah: [
-    'Kepuasan',
-    'Keluhan',
-    'Customer Experience',
-    'Media Sosial',
-    'Viral Issue',
-    'CSR',
-    'ESG',
-    'Brand Image',
-  ],
-  Risiko: [
-    'Fraud',
-    'Cyber Security',
-    'AML',
-    'Kepatuhan',
-    'Sengketa',
-    'Gugatan',
-    'Audit',
-    'Krisis Reputasi',
-    'Hoaks',
-  ],
-  Industri: [
-    'Industri Perbankan',
-    'Perbankan Syariah',
-    'Fintech',
-    'Ekonomi',
-    'BI Rate',
-    'Inflasi',
-    'Nilai Tukar',
-    'Harga Emas',
-    'Sukuk',
-    'Investasi',
-  ],
 }
 
-export type JenisMedia = 'Media Massa' | 'Media Sosial'
+export type JenisMedia = 'Media Online' | 'Media Sosial'
 
-export const semuaMediaMassa = [
+export const semuaMediaOnline = [
   'Kompas',
   'Detik',
   'CNBC Indonesia',
@@ -114,7 +78,6 @@ export interface Berita {
   isu: Isu
   subIsu: string
   sentimen: Sentimen
-  riskLevel: RiskLevel
   urgensi: Urgensi
   engagement: number
   isViral: boolean
@@ -134,16 +97,24 @@ export interface TitikTren {
   jumlah: number
 }
 
+export interface ProdukEksposur {
+  produk: string
+  eksposur: number
+}
+
 export interface Kompetitor {
   id: string
   nama: string
   kategori: 'Bank Syariah' | 'Bank Digital/Fintech'
-  shareOfVoice: number
-  shareOfEngagement: number
   sentimentScore: number
   topIssue: string
-  mediaExposure: number
   trend: Trend
+  mediaExposureOnline: number
+  mediaExposureSosial: number
+  engagementOnline: number
+  engagementSosial: number
+  produkEksposur: ProdukEksposur[]
+  trenHarian: TitikTren[]
 }
 
 export type TipeAlert =
@@ -160,7 +131,100 @@ export interface Alert {
   waktu: string
   tipe: TipeAlert
   isu: Isu
+  jenisMedia: JenisMedia
   judul: string
   deskripsi: string
   level: RiskLevel
+}
+
+// Domain untuk halaman Brand Perception, mengikuti unit analisis pada laporan
+// "Brand Perception Analysis" (Media Perception, Product Analysis, Impression &
+// Engagement, Public Perception, Complain Mapping).
+
+export type PlatformBP = 'Twitter' | 'Instagram' | 'Facebook' | 'YouTube' | 'TikTok'
+
+export const semuaPlatformBP: PlatformBP[] = ['Twitter', 'Instagram', 'Facebook', 'YouTube', 'TikTok']
+
+export interface SentimenHarianBP {
+  tanggal: string
+  Positif: number
+  Netral: number
+  Negatif: number
+}
+
+export interface TopikVolume {
+  topik: string
+  jumlah: number
+}
+
+export interface PlatformMetrik {
+  platform: PlatformBP
+  impression: number
+  engagement: number
+}
+
+export interface EngagementHarianBP {
+  tanggal: string
+  allPlatform: number
+}
+
+export interface KeluhanPlatform {
+  jenis: string
+  Twitter: number
+  Instagram: number
+  Facebook: number
+  YouTube: number
+  TikTok: number
+}
+
+export interface BrandPerceptionData {
+  mediaSentimenHarian: SentimenHarianBP[]
+  mediaSentimenTotal: { Positif: number; Netral: number; Negatif: number; Sensitif: number }
+  audienceSentimenHarian: SentimenHarianBP[]
+  audienceSentimenTotal: { Positif: number; Netral: number; Negatif: number }
+  topikMediaMassa: TopikVolume[]
+  topikMediaSosial: TopikVolume[]
+  platformMetrik: PlatformMetrik[]
+  engagementHarian: EngagementHarianBP[]
+  keluhanPerPlatform: TopikVolume[]
+  jenisKeluhan: KeluhanPlatform[]
+  highlightPositif: string
+  highlightNegatif: string
+  ringkasan: string[]
+}
+
+// Domain untuk unit analisis "Monthly Recap Media" pada halaman Isu Perbankan dan
+// Isu BSI, mengikuti struktur laporan "Monthly News Recap": sebaran jenis media,
+// tier media, top spokesperson, dan tren pemberitaan mingguan.
+
+export interface SebaranMedia {
+  online: number
+  cetak: number
+  tv: number
+}
+
+export interface TierMedia {
+  tier1: number
+  tier2: number
+  tier3: number
+}
+
+export interface Spokesperson {
+  jabatan: string
+  statement: number
+}
+
+export interface TrendMingguan {
+  minggu: string
+  Online: number
+  Cetak: number
+  TV: number
+}
+
+export interface MonthlyRecapData {
+  newsScore: number
+  sebaranMedia: SebaranMedia
+  tierMedia: TierMedia
+  topSpokesperson: Spokesperson[]
+  trendMingguan: TrendMingguan[]
 }

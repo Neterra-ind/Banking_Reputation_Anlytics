@@ -8,3 +8,10 @@ body {
   margin: 0;
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
 }
+
+h1,
+h2,
+h3 {
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}

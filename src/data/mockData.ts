@@ -1,14 +1,17 @@
 import type {
   Alert,
   Berita,
+  BrandPerceptionData,
   Isu,
+  KeluhanPlatform,
   Kompetitor,
+  MonthlyRecapData,
   RiskLevel,
   Sentimen,
   TipeAlert,
   Urgensi,
 } from '@/types'
-import { semuaIsu, semuaMediaMassa, semuaMediaSosial, subIsuByIsu } from '@/types'
+import { semuaIsu, semuaMediaOnline, semuaMediaSosial, semuaPlatformBP, subIsuByIsu } from '@/types'
 
 // Seeded PRNG (mulberry32) supaya data mock konsisten di setiap reload.
 function mulberry32(seed: number) {
@@ -66,36 +69,9 @@ const BISNIS_TEMPLATES = [
   (s: string) => `Analis Soroti Prospek Bisnis ${s} BSI`,
 ]
 
-const NASABAH_TEMPLATES = [
-  (s: string) => `Nasabah Keluhkan Layanan terkait ${s}`,
-  (s: string) => `Survei: Tingkat ${s} Nasabah BSI Meningkat`,
-  (s: string) => `Viral di Media Sosial, Nasabah Soroti ${s} BSI`,
-  (s: string) => `BSI Tanggapi Masukan Nasabah soal ${s}`,
-  (s: string) => `Program ${s} BSI Dapat Respons Positif Publik`,
-]
-
-const RISIKO_TEMPLATES = [
-  (s: string) => `Waspada Modus ${s} Mengatasnamakan BSI`,
-  (s: string) => `BSI Perkuat Sistem Mitigasi ${s}`,
-  (s: string) => `Otoritas Selidiki Dugaan ${s} di Sektor Perbankan Syariah`,
-  (s: string) => `BSI Klarifikasi Isu ${s} yang Beredar di Masyarakat`,
-  (s: string) => `Laporan ${s}: BSI Tingkatkan Pengawasan Internal`,
-]
-
-const INDUSTRI_TEMPLATES = [
-  (s: string) => `Tren ${s} Pengaruhi Kinerja Perbankan Syariah Nasional`,
-  (s: string) => `Analis: ${s} Jadi Peluang Baru bagi BSI`,
-  (s: string) => `Perkembangan ${s} Dorong Persaingan Industri Perbankan Syariah`,
-  (s: string) => `BSI Rilis Pandangan soal Arah ${s} Tahun Ini`,
-  (s: string) => `Industri Perbankan Syariah Hadapi Tantangan ${s}`,
-]
-
 const TEMPLATES_BY_ISU: Record<Isu, ((s: string) => string)[]> = {
-  Kebijakan: KEBIJAKAN_TEMPLATES,
-  Bisnis: BISNIS_TEMPLATES,
-  Nasabah: NASABAH_TEMPLATES,
-  Risiko: RISIKO_TEMPLATES,
-  Industri: INDUSTRI_TEMPLATES,
+  Perbankan: KEBIJAKAN_TEMPLATES,
+  BSI: BISNIS_TEMPLATES,
 }
 
 const dampakBisnisPool = [
@@ -164,9 +140,6 @@ const kompetitorNama = [
   'Bank KB Syariah',
   'Bank Aladin Syariah',
   'blu by BCA Digital',
-  'Bank Jago',
-  'SeaBank',
-  'Allo Bank',
 ]
 
 function sampleN<T>(arr: T[], n: number): T[] {
@@ -190,26 +163,20 @@ function buatBerita(): Berita[] {
     for (let i = 0; i < jumlah; i++) {
       const sub = pick(subs)
       const judul = pick(templates)(sub)
-      const jenisMedia = pickWeighted<'Media Massa' | 'Media Sosial'>({
-        'Media Massa': 0.55,
+      const jenisMedia = pickWeighted<'Media Online' | 'Media Sosial'>({
+        'Media Online': 0.55,
         'Media Sosial': 0.45,
       })
-      const sumber = jenisMedia === 'Media Massa' ? pick(semuaMediaMassa) : pick(semuaMediaSosial)
+      const sumber = jenisMedia === 'Media Online' ? pick(semuaMediaOnline) : pick(semuaMediaSosial)
 
       const sentimen = pickWeighted<Sentimen>({ Positif: 0.4, Netral: 0.38, Negatif: 0.22 })
-      const riskLevel = pickWeighted<RiskLevel>(
-        sentimen === 'Negatif'
-          ? { Low: 0.15, Medium: 0.35, High: 0.35, Critical: 0.15 }
-          : { Low: 0.55, Medium: 0.3, High: 0.12, Critical: 0.03 },
-      )
       const urgensi = pickWeighted<Urgensi>(
-        riskLevel === 'Critical' || riskLevel === 'High'
+        sentimen === 'Negatif'
           ? { Rendah: 0.05, Sedang: 0.25, Tinggi: 0.45, Kritis: 0.25 }
           : { Rendah: 0.45, Sedang: 0.4, Tinggi: 0.13, Kritis: 0.02 },
       )
 
-      const isViral =
-        jenisMedia === 'Media Sosial' && (riskLevel === 'High' || riskLevel === 'Critical') && rand() < 0.4
+      const isViral = jenisMedia === 'Media Sosial' && rand() < 0.18
       const engagement = isViral
         ? randomInt(5000, 45000)
         : jenisMedia === 'Media Sosial'
@@ -218,8 +185,7 @@ function buatBerita(): Berita[] {
 
       const tanggal = isoDaysAgo(randomInt(0, 29))
 
-      const kompetitorTerkait =
-        (isu === 'Bisnis' || isu === 'Industri') && rand() < 0.18 ? pick(kompetitorNama) : undefined
+      const kompetitorTerkait = isu === 'BSI' && rand() < 0.18 ? pick(kompetitorNama) : undefined
 
       list.push({
         id: `BR-${String(counter).padStart(4, '0')}`,
@@ -230,7 +196,6 @@ function buatBerita(): Berita[] {
         isu,
         subIsu: sub,
         sentimen,
-        riskLevel,
         urgensi,
         engagement,
         isViral,
@@ -239,7 +204,7 @@ function buatBerita(): Berita[] {
         peluangBisnis: pick(peluangBisnisPool),
         stakeholderTerkait: sampleN(stakeholderPool, randomInt(1, 3)),
         unitKerjaTerdampak: sampleN(unitKerjaPool, randomInt(1, 2)),
-        ringkasanAI: `Pemberitaan mengenai ${sub.toLowerCase()} pada isu ${isu} dengan sentimen ${sentimen.toLowerCase()} dan tingkat risiko ${riskLevel}. Isu ini perlu ditindaklanjuti oleh unit terkait sesuai rekomendasi AI.`,
+        ringkasanAI: `Pemberitaan mengenai ${sub.toLowerCase()} pada isu ${isu} dengan sentimen ${sentimen.toLowerCase()}. Isu ini perlu ditindaklanjuti oleh unit terkait sesuai rekomendasi AI.`,
         rekomendasiAI: sampleN(rekomendasiPool, randomInt(1, 3)),
         kompetitorTerkait,
         url: `https://contoh-media.id/berita/${counter}`,
@@ -253,211 +218,183 @@ function buatBerita(): Berita[] {
 
 export const daftarBerita: Berita[] = buatBerita()
 
-export const daftarKompetitor: Kompetitor[] = [
+const KOMPETITOR_PRODUK: Record<string, string[]> = {
+  BSI: ['Tabungan', 'Pembiayaan UMKM', 'KPR Syariah', 'Mobile Banking (BYOND)', 'Gadai Emas', 'Haji & Umrah'],
+  'Bank Muamalat Indonesia': ['Tabungan iB', 'Pembiayaan UMKM', 'KPR Syariah', 'Mobile Banking', 'Gadai Emas'],
+  'BTN Syariah': ['KPR Syariah', 'Tabungan', 'Pembiayaan Griya', 'Mobile Banking'],
+  'CIMB Niaga Syariah': ['Tabungan', 'Pembiayaan UMKM', 'KPR Syariah', 'Mobile Banking'],
+  'BCA Syariah': ['Tabungan', 'Pembiayaan', 'KPR Syariah', 'Mobile Banking', 'Deposito'],
+  'Bank Mega Syariah': ['Tabungan', 'Pembiayaan', 'Gadai Emas', 'Mobile Banking'],
+  'Bank KB Syariah': ['Tabungan', 'Pembiayaan UMKM', 'Mobile Banking'],
+  'Bank Aladin Syariah': ['Digital Banking', 'Tabungan Digital', 'Pembiayaan Digital'],
+  'blu by BCA Digital': ['Tabungan Digital', 'Deposito Digital', 'Kartu Debit', 'Fitur Kantong'],
+}
+
+function bagiEksposurProduk(total: number, produk: string[]) {
+  const bobot = produk.map(() => rand() + 0.3)
+  const jumlahBobot = bobot.reduce((a, b) => a + b, 0)
+  return produk
+    .map((p, i) => ({ produk: p, eksposur: Math.max(1, Math.round((bobot[i] / jumlahBobot) * total)) }))
+    .sort((a, b) => b.eksposur - a.eksposur)
+}
+
+const daftarKompetitorBase: Omit<Kompetitor, 'produkEksposur' | 'trenHarian'>[] = [
   {
     id: 'KP-00',
     nama: 'BSI',
     kategori: 'Bank Syariah',
-    shareOfVoice: 32,
-    shareOfEngagement: 35,
     sentimentScore: 68,
     topIssue: 'Transformasi Digital BYOND',
-    mediaExposure: 480,
+    mediaExposureOnline: 260,
+    mediaExposureSosial: 220,
+    engagementOnline: 210,
+    engagementSosial: 490,
     trend: 'Naik',
   },
   {
     id: 'KP-01',
     nama: 'Bank Muamalat Indonesia',
     kategori: 'Bank Syariah',
-    shareOfVoice: 14,
-    shareOfEngagement: 12,
     sentimentScore: 55,
     topIssue: 'Restrukturisasi Bisnis',
-    mediaExposure: 210,
+    mediaExposureOnline: 120,
+    mediaExposureSosial: 90,
+    engagementOnline: 70,
+    engagementSosial: 170,
     trend: 'Stabil',
   },
   {
     id: 'KP-02',
     nama: 'BTN Syariah',
     kategori: 'Bank Syariah',
-    shareOfVoice: 9,
-    shareOfEngagement: 8,
     sentimentScore: 60,
     topIssue: 'Ekspansi KPR Syariah',
-    mediaExposure: 140,
+    mediaExposureOnline: 85,
+    mediaExposureSosial: 55,
+    engagementOnline: 50,
+    engagementSosial: 110,
     trend: 'Naik',
   },
   {
     id: 'KP-03',
     nama: 'CIMB Niaga Syariah',
     kategori: 'Bank Syariah',
-    shareOfVoice: 8,
-    shareOfEngagement: 7,
     sentimentScore: 58,
     topIssue: 'Produk Pembiayaan UMKM',
-    mediaExposure: 130,
+    mediaExposureOnline: 75,
+    mediaExposureSosial: 55,
+    engagementOnline: 45,
+    engagementSosial: 95,
     trend: 'Stabil',
   },
   {
     id: 'KP-04',
     nama: 'BCA Syariah',
     kategori: 'Bank Syariah',
-    shareOfVoice: 7,
-    shareOfEngagement: 8,
     sentimentScore: 62,
     topIssue: 'Digitalisasi Layanan',
-    mediaExposure: 120,
+    mediaExposureOnline: 65,
+    mediaExposureSosial: 55,
+    engagementOnline: 50,
+    engagementSosial: 110,
     trend: 'Naik',
   },
   {
     id: 'KP-05',
     nama: 'Bank Mega Syariah',
     kategori: 'Bank Syariah',
-    shareOfVoice: 6,
-    shareOfEngagement: 5,
     sentimentScore: 50,
     topIssue: 'Kinerja Keuangan Kuartalan',
-    mediaExposure: 95,
+    mediaExposureOnline: 55,
+    mediaExposureSosial: 40,
+    engagementOnline: 30,
+    engagementSosial: 70,
     trend: 'Turun',
   },
   {
     id: 'KP-06',
     nama: 'Bank KB Syariah',
     kategori: 'Bank Syariah',
-    shareOfVoice: 4,
-    shareOfEngagement: 3,
     sentimentScore: 48,
     topIssue: 'Transformasi Kelembagaan',
-    mediaExposure: 60,
+    mediaExposureOnline: 35,
+    mediaExposureSosial: 25,
+    engagementOnline: 18,
+    engagementSosial: 42,
     trend: 'Stabil',
   },
   {
     id: 'KP-07',
     nama: 'Bank Aladin Syariah',
     kategori: 'Bank Syariah',
-    shareOfVoice: 3,
-    shareOfEngagement: 3,
     sentimentScore: 45,
     topIssue: 'Layanan Digital Banking',
-    mediaExposure: 45,
+    mediaExposureOnline: 20,
+    mediaExposureSosial: 25,
+    engagementOnline: 18,
+    engagementSosial: 42,
     trend: 'Turun',
   },
   {
     id: 'KP-08',
     nama: 'blu by BCA Digital',
     kategori: 'Bank Digital/Fintech',
-    shareOfVoice: 6,
-    shareOfEngagement: 9,
     sentimentScore: 66,
     topIssue: 'Kampanye Nasabah Baru',
-    mediaExposure: 110,
+    mediaExposureOnline: 40,
+    mediaExposureSosial: 70,
+    engagementOnline: 55,
+    engagementSosial: 125,
     trend: 'Naik',
-  },
-  {
-    id: 'KP-09',
-    nama: 'Bank Jago',
-    kategori: 'Bank Digital/Fintech',
-    shareOfVoice: 5,
-    shareOfEngagement: 7,
-    sentimentScore: 64,
-    topIssue: 'Kolaborasi Ekosistem Digital',
-    mediaExposure: 100,
-    trend: 'Naik',
-  },
-  {
-    id: 'KP-10',
-    nama: 'SeaBank',
-    kategori: 'Bank Digital/Fintech',
-    shareOfVoice: 4,
-    shareOfEngagement: 2,
-    sentimentScore: 58,
-    topIssue: 'Bunga Tabungan Kompetitif',
-    mediaExposure: 85,
-    trend: 'Stabil',
-  },
-  {
-    id: 'KP-11',
-    nama: 'Allo Bank',
-    kategori: 'Bank Digital/Fintech',
-    shareOfVoice: 2,
-    shareOfEngagement: 1,
-    sentimentScore: 52,
-    topIssue: 'Ekspansi Fitur Pembayaran',
-    mediaExposure: 40,
-    trend: 'Turun',
   },
 ]
 
-const alertTemplates: { tipe: TipeAlert; isu: Isu; judul: string; deskripsi: string; level: RiskLevel }[] = [
-  {
-    tipe: 'Lonjakan Sentimen Negatif',
-    isu: 'Nasabah',
-    judul: 'Lonjakan sentimen negatif terkait keluhan layanan mobile banking',
-    deskripsi: 'Volume percakapan negatif naik 3x lipat dalam 6 jam terakhir di media sosial.',
-    level: 'High',
-  },
-  {
-    tipe: 'Isu Viral',
-    isu: 'Nasabah',
-    judul: 'Unggahan keluhan nasabah viral di X dengan lebih dari 20 ribu interaksi',
-    deskripsi: 'Thread keluhan nasabah tentang gangguan transaksi menjadi trending topic lokal.',
-    level: 'Critical',
-  },
+function buatTrenHarianKompetitor(total: number, hari = 14) {
+  const bagian = bagiRata(total, hari)
+  return bagian.map((jumlah, i) => ({ tanggal: isoDaysAgo(hari - 1 - i).slice(5), jumlah }))
+}
+
+export const daftarKompetitor: Kompetitor[] = daftarKompetitorBase.map((k) => ({
+  ...k,
+  produkEksposur: bagiEksposurProduk(
+    k.mediaExposureOnline + k.mediaExposureSosial,
+    KOMPETITOR_PRODUK[k.nama] ?? [],
+  ),
+  trenHarian: buatTrenHarianKompetitor(k.mediaExposureOnline + k.mediaExposureSosial),
+}))
+
+const alertTemplates: { tipe: TipeAlert; isu: Isu; jenisMedia: 'Media Online' | 'Media Sosial'; judul: string; deskripsi: string; level: RiskLevel }[] = [
   {
     tipe: 'Regulasi Baru',
-    isu: 'Kebijakan',
+    isu: 'Perbankan',
+    jenisMedia: 'Media Online',
     judul: 'OJK menerbitkan surat edaran baru terkait perlindungan data nasabah',
     deskripsi: 'Aturan baru berpotensi memengaruhi proses onboarding digital BSI.',
     level: 'Medium',
   },
   {
     tipe: 'Gangguan Layanan Digital',
-    isu: 'Bisnis',
+    isu: 'BSI',
+    jenisMedia: 'Media Sosial',
     judul: 'Laporan gangguan aplikasi BYOND dari sejumlah pengguna',
     deskripsi: 'Beberapa nasabah melaporkan kegagalan transaksi pada aplikasi mobile banking.',
     level: 'High',
   },
   {
-    tipe: 'Trending Topic',
-    isu: 'Industri',
-    judul: 'Nama BSI masuk trending topic X terkait kenaikan BI Rate',
-    deskripsi: 'Diskusi publik meningkat seputar dampak kebijakan suku bunga terhadap perbankan syariah.',
-    level: 'Low',
-  },
-  {
-    tipe: 'Potensi Krisis',
-    isu: 'Risiko',
-    judul: 'Indikasi awal isu hoaks penipuan mengatasnamakan BSI',
-    deskripsi: 'Ditemukan pesan berantai mencatut nama BSI untuk modus penipuan transfer dana.',
-    level: 'Critical',
-  },
-  {
-    tipe: 'Lonjakan Sentimen Negatif',
-    isu: 'Risiko',
-    judul: 'Sentimen negatif meningkat terkait pemberitaan dugaan fraud',
-    deskripsi: 'Beberapa portal berita ekonomi memberitakan dugaan kasus fraud di industri perbankan syariah.',
-    level: 'High',
-  },
-  {
     tipe: 'Regulasi Baru',
-    isu: 'Kebijakan',
+    isu: 'Perbankan',
+    jenisMedia: 'Media Online',
     judul: 'DSN-MUI merilis fatwa baru terkait produk pembiayaan syariah',
     deskripsi: 'Fatwa baru berpotensi memerlukan penyesuaian pada beberapa produk pembiayaan BSI.',
     level: 'Medium',
   },
   {
     tipe: 'Trending Topic',
-    isu: 'Bisnis',
+    isu: 'BSI',
+    jenisMedia: 'Media Sosial',
     judul: 'Kampanye promo Umrah BSI ramai dibicarakan di media sosial',
     deskripsi: 'Engagement positif meningkat signifikan terkait promo pembiayaan Umrah.',
     level: 'Low',
-  },
-  {
-    tipe: 'Isu Viral',
-    isu: 'Industri',
-    judul: 'Perbandingan bunga tabungan bank digital ramai dibahas netizen',
-    deskripsi: 'Perbincangan publik membandingkan produk tabungan BSI dengan bank digital kompetitor.',
-    level: 'Medium',
   },
 ]
 
@@ -475,5 +412,215 @@ export const daftarAlert: Alert[] = alertTemplates.map((a, idx) => {
 export const semuaSentimen: Sentimen[] = ['Positif', 'Netral', 'Negatif']
 export const semuaRiskLevel: RiskLevel[] = ['Low', 'Medium', 'High', 'Critical']
 export const semuaUrgensi: Urgensi[] = ['Rendah', 'Sedang', 'Tinggi', 'Kritis']
-export const semuaJenisMedia = ['Media Massa', 'Media Sosial'] as const
-export const semuaSumber = [...semuaMediaMassa, ...semuaMediaSosial]
+export const semuaJenisMedia = ['Media Online', 'Media Sosial'] as const
+export const semuaSumber = [...semuaMediaOnline, ...semuaMediaSosial]
+
+// Data mock untuk halaman Brand Perception, unit analisisnya mengikuti laporan
+// "Brand Perception Analysis": Media Perception, Product Analysis (mass media &
+// social media), Potential Impression & Engagement, Public Perception, dan
+// Complain Mapping.
+
+const TOPIK_MEDIA_MASSA: [string, number, number][] = [
+  ['Passing Mention', 3200, 4500],
+  ['Saham (BRIS)', 1800, 2400],
+  ['Pembiayaan UMKM', 900, 1400],
+  ['Digital Banking', 600, 900],
+  ['CSR', 450, 700],
+  ['Event/Sponsorship', 400, 650],
+  ['Pembiayaan Korporasi', 400, 650],
+  ['Pendanaan (Funding)', 380, 600],
+  ['Haji & Umrah', 350, 600],
+  ['ESG', 300, 500],
+  ['Literasi Keuangan Syariah', 300, 480],
+  ['Kinerja Perusahaan', 250, 420],
+]
+
+const TOPIK_MEDIA_SOSIAL: [string, number, number][] = [
+  ['Penyaluran Bantuan Sosial Melalui BSI', 1800, 2800],
+  ['Diskusi Publik Isu Ekonomi Syariah', 700, 1100],
+  ['Keluhan serta Pertanyaan Warganet', 700, 1000],
+  ['Akun BSI Respons Keluhan Warganet', 450, 650],
+  ['Program Promo BSI', 300, 500],
+  ['Program Loyalti Nasabah', 120, 220],
+  ['BYOND Sirkuit/Event Nasional', 100, 200],
+  ['BSI di Islamic Book Fair', 80, 160],
+  ['Info Lowongan Kerja BSI', 20, 50],
+  ['Penerbitan Green Sukuk', 5, 20],
+  ['Sinergi BSI dengan Mitra Strategis', 5, 20],
+  ['Kampanye Edukasi Keuangan Syariah', 5, 20],
+  ['Investasi Sukuk Ritel via BYOND', 3, 15],
+  ['Imbauan Waspada Penipuan OTP', 3, 15],
+]
+
+const JENIS_KELUHAN_TEMPLATE: [string, [number, number], [number, number], [number, number], [number, number], [number, number]][] = [
+  // [jenis, Twitter, Instagram, Facebook, YouTube, TikTok] rentang [min,max]
+  ['Modus Penipuan', [8, 16], [0, 2], [2, 6], [1, 4], [1, 4]],
+  ['Kendala ATM', [0, 3], [0, 1], [0, 2], [0, 1], [0, 1]],
+  ['Kendala Kartu Debit', [2, 6], [0, 1], [0, 2], [0, 1], [0, 1]],
+  ['Kendala Mobile Banking', [40, 60], [0, 2], [4, 10], [0, 1], [8, 14]],
+  ['Kendala Layanan', [4, 10], [0, 1], [6, 12], [3, 6], [2, 6]],
+  ['Kendala Penggunaan QRIS', [40, 55], [0, 1], [0, 1], [0, 1], [0, 1]],
+  ['Gagal Transaksi', [6, 12], [0, 1], [0, 2], [0, 1], [1, 3]],
+]
+
+function buatSentimenHarian(hari: number, rentang: {
+  positif: [number, number]
+  netral: [number, number]
+  negatif: [number, number]
+}) {
+  const list = []
+  for (let i = hari - 1; i >= 0; i--) {
+    list.push({
+      tanggal: isoDaysAgo(i),
+      Positif: randomInt(...rentang.positif),
+      Netral: randomInt(...rentang.netral),
+      Negatif: randomInt(...rentang.negatif),
+    })
+  }
+  return list
+}
+
+function buatTopikVolume(template: [string, number, number][]) {
+  return template
+    .map(([topik, min, max]) => ({ topik, jumlah: randomInt(min, max) }))
+    .sort((a, b) => b.jumlah - a.jumlah)
+}
+
+function buatBrandPerceptionData(): BrandPerceptionData {
+  const mediaSentimenHarian = buatSentimenHarian(30, {
+    positif: [80, 400],
+    netral: [20, 200],
+    negatif: [0, 15],
+  })
+  const audienceSentimenHarian = buatSentimenHarian(30, {
+    positif: [20, 150],
+    netral: [60, 300],
+    negatif: [0, 4],
+  })
+
+  const jumlahkan = (list: { Positif: number; Netral: number; Negatif: number }[]) =>
+    list.reduce(
+      (acc, cur) => ({
+        Positif: acc.Positif + cur.Positif,
+        Netral: acc.Netral + cur.Netral,
+        Negatif: acc.Negatif + cur.Negatif,
+      }),
+      { Positif: 0, Netral: 0, Negatif: 0 },
+    )
+
+  const mediaSentimenTotal = { ...jumlahkan(mediaSentimenHarian), Sensitif: randomInt(3, 10) }
+  const audienceSentimenTotal = jumlahkan(audienceSentimenHarian)
+
+  const engagementHarian = Array.from({ length: 30 }, (_, i) => ({
+    tanggal: isoDaysAgo(29 - i),
+    allPlatform: randomInt(800, 30000),
+  }))
+
+  const platformMetrik = semuaPlatformBP.map((platform) => {
+    const [impMin, impMax, engMin, engMax] = {
+      Twitter: [700_000_000, 1_100_000_000, 250_000_000, 400_000_000],
+      Instagram: [60_000_000, 90_000_000, 70_000_000, 110_000_000],
+      Facebook: [30_000_000, 60_000_000, 5_000_000, 15_000_000],
+      YouTube: [10_000_000, 25_000_000, 1_000_000, 4_000_000],
+      TikTok: [15_000_000, 35_000_000, 2_000_000, 6_000_000],
+    }[platform] as [number, number, number, number]
+    return {
+      platform,
+      impression: randomInt(impMin, impMax),
+      engagement: randomInt(engMin, engMax),
+    }
+  })
+
+  const jenisKeluhan: KeluhanPlatform[] = JENIS_KELUHAN_TEMPLATE.map(
+    ([jenis, tw, ig, fb, yt, tt]) => ({
+      jenis,
+      Twitter: randomInt(...tw),
+      Instagram: randomInt(...ig),
+      Facebook: randomInt(...fb),
+      YouTube: randomInt(...yt),
+      TikTok: randomInt(...tt),
+    }),
+  )
+
+  const keluhanPerPlatform = semuaPlatformBP
+    .map((platform) => ({
+      topik: platform,
+      jumlah: jenisKeluhan.reduce((sum, j) => sum + j[platform], 0),
+    }))
+    .sort((a, b) => b.jumlah - a.jumlah)
+
+  return {
+    mediaSentimenHarian,
+    mediaSentimenTotal,
+    audienceSentimenHarian,
+    audienceSentimenTotal,
+    topikMediaMassa: buatTopikVolume(TOPIK_MEDIA_MASSA),
+    topikMediaSosial: buatTopikVolume(TOPIK_MEDIA_SOSIAL),
+    platformMetrik,
+    engagementHarian,
+    keluhanPerPlatform,
+    jenisKeluhan,
+    highlightPositif:
+      'BSI Xpora Dorong UMKM Kopi Gayo Tembus Pasar Global, Ekspor Capai US$1 Juta',
+    highlightNegatif: 'Polda Selidiki Dugaan Modus Penipuan Mengatasnamakan BSI di Media Sosial',
+    ringkasan: [
+      'Sepanjang periode ini, pemberitaan BSI didominasi topik Passing Mention, di antaranya seputar penyebutan BSI sebagai salah satu bank penyalur bantuan sosial pemerintah.',
+      'Tiga isu utama dalam analisis produk di media online yakni Passing Mention, Saham (BRIS), dan Pembiayaan UMKM.',
+      'Sentimen BSI di media online didominasi pemberitaan positif, salah satunya kisah sukses UMKM binaan BSI menembus pasar ekspor.',
+      'Twitter menduduki potential impression tertinggi dibanding platform lain, menunjukkan tingginya potensi netizen melihat brand BSI di platform tersebut.',
+      'Sementara itu, audience sentiment dalam persepsi publik didominasi sentimen netral, didorong cuitan seputar transaksi dan unggahan yang hanya menyebutkan BSI tanpa konteks lebih lanjut.',
+      'BSI perlu secara aktif mendorong narasi strategis yang menonjolkan peran konkret dalam sektor prioritas nasional seperti pembiayaan UMKM hijau, digitalisasi perbankan desa, dan inklusi keuangan syariah.',
+      'Perbincangan terkait keluhan didominasi oleh Kendala Mobile Banking dan Kendala QRIS, terutama melalui platform Twitter.',
+    ],
+  }
+}
+
+export const brandPerceptionData: BrandPerceptionData = buatBrandPerceptionData()
+
+// Data mock untuk unit analisis "Monthly Recap Media" pada halaman Isu BSI,
+// mengikuti struktur laporan "Monthly News Recap": sebaran jenis media
+// (Online/Cetak/TV), tier media, top spokesperson, dan tren pemberitaan
+// mingguan.
+
+function bagiRata(total: number, jumlahBagian: number): number[] {
+  const bobot = Array.from({ length: jumlahBagian }, () => rand() + 0.3)
+  const jumlahBobot = bobot.reduce((a, b) => a + b, 0)
+  return bobot.map((b) => Math.max(0, Math.round((b / jumlahBobot) * total)))
+}
+
+function buatMonthlyRecap(totalBase: number): MonthlyRecapData {
+  const online = Math.round(totalBase * (0.93 + rand() * 0.04))
+  const cetak = Math.round(totalBase * (0.03 + rand() * 0.03))
+  const tv = Math.max(1, totalBase - online - cetak)
+
+  const tier1 = Math.round(totalBase * (0.1 + rand() * 0.05))
+  const tier2 = Math.round(totalBase * (0.08 + rand() * 0.05))
+  const tier3 = Math.max(1, totalBase - tier1 - tier2)
+
+  const newsScore = totalBase * randomInt(11, 15)
+
+  const bagianOnline = bagiRata(online, 4)
+  const bagianCetak = bagiRata(cetak, 4)
+  const bagianTv = bagiRata(tv, 4)
+
+  const trendMingguan = Array.from({ length: 4 }, (_, i) => ({
+    minggu: `Minggu ${i + 1}`,
+    Online: bagianOnline[i],
+    Cetak: bagianCetak[i],
+    TV: bagianTv[i],
+  }))
+
+  return {
+    newsScore,
+    sebaranMedia: { online, cetak, tv },
+    tierMedia: { tier1, tier2, tier3 },
+    topSpokesperson: [
+      { jabatan: 'Direktur Utama BSI', statement: randomInt(60, 110) },
+      { jabatan: 'Direktur Retail Banking BSI', statement: randomInt(40, 90) },
+      { jabatan: 'Corporate Secretary BSI', statement: randomInt(30, 70) },
+    ].sort((a, b) => b.statement - a.statement),
+    trendMingguan,
+  }
+}
+
+export const monthlyRecapBSI: MonthlyRecapData = buatMonthlyRecap(240)

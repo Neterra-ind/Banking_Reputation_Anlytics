@@ -17,12 +17,13 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { Flame, MessageSquare, Newspaper, Radio, ShieldAlert } from 'lucide-react'
+import { Flame, MessageSquare, Newspaper, Radio } from 'lucide-react'
 import { StatCard } from '@/components/StatCard'
+import { FilterSelect } from '@/components/FilterSelect'
 import { TimelineFilter } from '@/components/TimelineFilter'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
-import { RiskBadge, SentimenBadge } from '@/components/ui/Badge'
-import { daftarBerita } from '@/data/mockData'
+import { SentimenBadge } from '@/components/ui/Badge'
+import { daftarBerita, semuaJenisMedia } from '@/data/mockData'
 import {
   bandingkanPerIsu,
   cocokPeriode,
@@ -44,11 +45,8 @@ const SENTIMEN_COLOR: Record<string, string> = {
 }
 
 const ISU_COLOR: Record<Isu, string> = {
-  Kebijakan: '#0d9488',
-  Bisnis: '#6366f1',
-  Nasabah: '#f59e0b',
-  Risiko: '#f43f5e',
-  Industri: '#8b5cf6',
+  Perbankan: '#0d9488',
+  BSI: '#6366f1',
 }
 
 function sentimenDominan(sentimenList: Sentimen[]): Sentimen {
@@ -59,19 +57,19 @@ function sentimenDominan(sentimenList: Sentimen[]): Sentimen {
 
 export function Dashboard() {
   const [periode, setPeriode] = useState<PeriodeValue>(PERIODE_DEFAULT)
+  const [sumberData, setSumberData] = useState('')
 
   const dataTerfilter = useMemo(
-    () => daftarBerita.filter((b) => cocokPeriode(b.tanggal, periode)),
-    [periode],
+    () =>
+      daftarBerita.filter(
+        (b) => cocokPeriode(b.tanggal, periode) && (!sumberData || b.jenisMedia === sumberData),
+      ),
+    [periode, sumberData],
   )
 
   const totalBerita = dataTerfilter.length
   const totalPercakapan = useMemo(
     () => dataTerfilter.filter((b) => b.jenisMedia === 'Media Sosial').length,
-    [dataTerfilter],
-  )
-  const totalRisiko = useMemo(
-    () => dataTerfilter.filter((b) => b.riskLevel === 'High' || b.riskLevel === 'Critical').length,
     [dataTerfilter],
   )
   const sentimenNegatifPct = useMemo(
@@ -108,7 +106,6 @@ export function Dashboard() {
           isu,
           volume: items.length,
           sentimenDominan: sentimenDominan(items.map((i) => i.sentimen)),
-          risikoTinggi: items.filter((i) => i.riskLevel === 'High' || i.riskLevel === 'Critical').length,
         }
       }),
     [dataTerfilter],
@@ -125,17 +122,19 @@ export function Dashboard() {
             Executive Summary
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Ringkasan monitoring media massa dan media sosial BSI {labelPeriode(periode)}.
+            Ringkasan monitoring media online dan media sosial BSI {labelPeriode(periode)}.
           </p>
         </div>
-        <TimelineFilter value={periode} onChange={setPeriode} />
+        <div className="flex flex-wrap items-end gap-3">
+          <FilterSelect label="Sumber Data" value={sumberData} options={[...semuaJenisMedia]} onChange={setSumberData} />
+          <TimelineFilter value={periode} onChange={setPeriode} />
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard label="Total Berita" value={totalBerita} icon={Newspaper} />
         <StatCard label="Total Percakapan Medsos" value={totalPercakapan} icon={MessageSquare} />
         <StatCard label="Sentimen Negatif" value={`${sentimenNegatifPct}%`} icon={Radio} tone="negative" />
-        <StatCard label="Risiko Tinggi/Kritis" value={totalRisiko} icon={ShieldAlert} tone="warning" />
       </div>
 
       <div>
@@ -143,7 +142,7 @@ export function Dashboard() {
         <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">
           Klik salah satu isu untuk melihat dashboard detail.
         </p>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {ringkasanIsu.map((k) => (
             <Link key={k.isu} to={`/isu/${k.isu}`}>
               <Card className="p-4 transition-colors hover:border-teal-300 dark:hover:border-teal-700">
@@ -152,13 +151,8 @@ export function Dashboard() {
                   {k.volume}
                 </p>
                 <p className="text-xs text-slate-500 dark:text-slate-400">berita/percakapan</p>
-                <div className="mt-3 flex items-center justify-between">
+                <div className="mt-3">
                   <SentimenBadge value={k.sentimenDominan} />
-                  {k.risikoTinggi > 0 && (
-                    <span className="text-xs font-medium text-orange-600 dark:text-orange-400">
-                      {k.risikoTinggi} risiko tinggi
-                    </span>
-                  )}
                 </div>
               </Card>
             </Link>
@@ -169,7 +163,7 @@ export function Dashboard() {
       <div>
         <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Perbandingan Antar Isu</h2>
         <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">
-          Bandingkan eksposur Nasabah, Kebijakan, Bisnis, Risiko, dan Industri secara langsung.
+          Bandingkan eksposur Perbankan dan BSI secara langsung.
         </p>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <Card>
@@ -216,37 +210,20 @@ export function Dashboard() {
           </Card>
         </div>
 
-        <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <Card>
-            <CardHeader title="Risiko Tinggi/Kritis per Isu" />
-            <CardContent>
-              <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={perbandinganIsu} layout="vertical" margin={{ left: 16 }}>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                  <XAxis type="number" fontSize={12} allowDecimals={false} />
-                  <YAxis type="category" dataKey="isu" fontSize={12} width={80} />
-                  <Tooltip />
-                  <Bar dataKey="risikoTinggi" fill="#f97316" radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader title="Engagement per Isu" subtitle="Total interaksi media sosial" />
-            <CardContent>
-              <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={perbandinganIsu} layout="vertical" margin={{ left: 16 }}>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                  <XAxis type="number" fontSize={12} allowDecimals={false} />
-                  <YAxis type="category" dataKey="isu" fontSize={12} width={80} />
-                  <Tooltip formatter={(v) => Number(v).toLocaleString('id-ID')} />
-                  <Bar dataKey="engagement" fill="#6366f1" radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </div>
+        <Card className="mt-4">
+          <CardHeader title="Engagement per Isu" subtitle="Total interaksi media sosial" />
+          <CardContent>
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={perbandinganIsu} layout="vertical" margin={{ left: 16 }}>
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                <XAxis type="number" fontSize={12} allowDecimals={false} />
+                <YAxis type="category" dataKey="isu" fontSize={12} width={80} />
+                <Tooltip formatter={(v) => Number(v).toLocaleString('id-ID')} />
+                <Bar dataKey="engagement" fill="#6366f1" radius={[0, 4, 4, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -337,11 +314,10 @@ export function Dashboard() {
             {trendingTopic.map((t) => (
               <div key={t.id} className="border-b border-slate-100 pb-2.5 last:border-0 last:pb-0 dark:border-slate-800">
                 <p className="text-sm font-medium text-slate-800 dark:text-slate-100">{t.judul}</p>
-                <div className="mt-1 flex items-center justify-between">
+                <div className="mt-1">
                   <span className="text-xs text-slate-500 dark:text-slate-400">
                     {t.engagement.toLocaleString('id-ID')} interaksi
                   </span>
-                  <RiskBadge value={t.riskLevel} />
                 </div>
               </div>
             ))}

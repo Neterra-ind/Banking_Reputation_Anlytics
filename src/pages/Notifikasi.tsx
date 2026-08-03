@@ -4,7 +4,7 @@ import { FilterSelect } from '@/components/FilterSelect'
 import { TimelineFilter } from '@/components/TimelineFilter'
 import { Card, CardContent } from '@/components/ui/Card'
 import { RiskBadge } from '@/components/ui/Badge'
-import { daftarAlert } from '@/data/mockData'
+import { daftarAlert, semuaJenisMedia } from '@/data/mockData'
 import { cocokPeriode, PERIODE_DEFAULT } from '@/lib/aggregations'
 import type { PeriodeValue } from '@/lib/aggregations'
 import { semuaIsu } from '@/types'
@@ -33,17 +33,24 @@ const levelOrder = { Critical: 0, High: 1, Medium: 2, Low: 3 }
 export function Notifikasi() {
   const [isu, setIsu] = useState('')
   const [tipe, setTipe] = useState('')
+  const [jenisMedia, setJenisMedia] = useState('')
   const [periode, setPeriode] = useState<PeriodeValue>(PERIODE_DEFAULT)
 
   const filtered = useMemo(() => {
     return daftarAlert
-      .filter((a) => (!isu || a.isu === isu) && (!tipe || a.tipe === tipe) && cocokPeriode(a.tanggal, periode))
+      .filter(
+        (a) =>
+          (!isu || a.isu === isu) &&
+          (!tipe || a.tipe === tipe) &&
+          (!jenisMedia || a.jenisMedia === jenisMedia) &&
+          cocokPeriode(a.tanggal, periode),
+      )
       .sort((a, b) => {
         const dateCompare = `${b.tanggal}T${b.waktu}`.localeCompare(`${a.tanggal}T${a.waktu}`)
         if (dateCompare !== 0) return dateCompare
         return levelOrder[a.level] - levelOrder[b.level]
       })
-  }, [isu, tipe, periode])
+  }, [isu, tipe, jenisMedia, periode])
 
   return (
     <div className="space-y-4">
@@ -57,6 +64,7 @@ export function Notifikasi() {
       <Card className="p-4">
         <div className="flex flex-wrap gap-3">
           <TimelineFilter value={periode} onChange={setPeriode} />
+          <FilterSelect label="Sumber Data" value={jenisMedia} options={[...semuaJenisMedia]} onChange={setJenisMedia} />
           <FilterSelect label="Isu" value={isu} options={semuaIsu} onChange={setIsu} />
           <FilterSelect label="Tipe Alert" value={tipe} options={semuaTipe} onChange={setTipe} />
         </div>
@@ -81,7 +89,7 @@ export function Notifikasi() {
                   </div>
                   <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{alert.deskripsi}</p>
                   <p className="mt-1.5 text-xs text-slate-400">
-                    {alert.tipe} · Isu {alert.isu} · {alert.tanggal} {alert.waktu}
+                    {alert.tipe} · Isu {alert.isu} · {alert.jenisMedia} · {alert.tanggal} {alert.waktu}
                   </p>
                 </div>
               </CardContent>
