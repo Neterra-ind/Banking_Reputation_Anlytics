@@ -17,11 +17,11 @@ const NAV_ITEMS: {
   activePaths?: string[]
 }[] = [
   { to: '/', label: 'Executive Summary', icon: LayoutDashboard, end: true },
-  { to: '/isu/BSI', label: 'Isu Perbankan dan BSI', icon: Landmark, activePaths: ['/isu/Perbankan'] },
-  { to: '/data-berita', label: 'Data Berita', icon: Newspaper },
+  { to: '/isu/BSI', label: 'Banking & BSI Issues', icon: Landmark, activePaths: ['/isu/Perbankan'] },
+  { to: '/data-berita', label: 'News Data', icon: Newspaper },
   { to: '/brand-perception', label: 'Complain Mapping', icon: Megaphone },
-  { to: '/kompetitor', label: 'Kompetitor', icon: Trophy },
-  { to: '/notifikasi', label: 'Notifikasi', icon: Bell },
+  { to: '/kompetitor', label: 'Competitor', icon: Trophy },
+  { to: '/notifikasi', label: 'Notifications', icon: Bell },
 ]
 
 function isNavItemActive(pathname: string, item: (typeof NAV_ITEMS)[number]) {
