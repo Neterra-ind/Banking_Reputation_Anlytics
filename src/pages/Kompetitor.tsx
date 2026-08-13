@@ -134,6 +134,25 @@ export function Kompetitor() {
     [ranking, kompetitorId],
   )
 
+  // Default: tampilkan BSI + 3 kompetitor dengan eksposur tertinggi supaya garis
+  // tren tidak jadi "spaghetti chart". Sisanya tetap bisa dimunculkan lewat klik legenda.
+  const [kompetitorTersembunyi, setKompetitorTersembunyi] = useState<Set<string>>(() => {
+    const bsi = ranking.find((k) => k.nama === 'BSI')?.nama
+    const tampilDefault = new Set(
+      [bsi, ...ranking.filter((k) => k.nama !== 'BSI').slice(0, 3).map((k) => k.nama)].filter(Boolean) as string[],
+    )
+    return new Set(ranking.filter((k) => !tampilDefault.has(k.nama)).map((k) => k.nama))
+  })
+
+  function toggleKompetitorTren(nama: string) {
+    setKompetitorTersembunyi((prev) => {
+      const next = new Set(prev)
+      if (next.has(nama)) next.delete(nama)
+      else next.add(nama)
+      return next
+    })
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -191,19 +210,34 @@ export function Kompetitor() {
                 <XAxis dataKey="tanggal" fontSize={11} tickLine={false} />
                 <YAxis fontSize={11} tickLine={false} allowDecimals={false} />
                 <Tooltip />
-                <Legend wrapperStyle={{ fontSize: 10 }} />
+                <Legend
+                  wrapperStyle={{ fontSize: 10, cursor: 'pointer' }}
+                  onClick={(e) => toggleKompetitorTren(String(e.dataKey ?? e.value))}
+                  formatter={(value, entry) => (
+                    <span
+                      style={{
+                        color: kompetitorTersembunyi.has(value) ? '#94a3b8' : (entry?.color as string),
+                        textDecoration: kompetitorTersembunyi.has(value) ? 'line-through' : 'none',
+                      }}
+                    >
+                      {value}
+                    </span>
+                  )}
+                />
                 {ranking.map((k, idx) => (
                   <Line
                     key={k.id}
                     type="monotone"
                     dataKey={k.nama}
                     stroke={PALETTE[idx % PALETTE.length]}
-                    strokeWidth={2}
+                    strokeWidth={k.nama === 'BSI' ? 3 : 2}
                     dot={false}
+                    hide={kompetitorTersembunyi.has(k.nama)}
                   />
                 ))}
               </LineChart>
             </ResponsiveContainer>
+            <p className="mt-2 text-xs text-slate-400">Klik nama kompetitor pada legenda untuk menampilkan/menyembunyikan garis.</p>
           </CardContent>
         </Card>
 
