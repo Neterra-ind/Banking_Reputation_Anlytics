@@ -166,38 +166,18 @@ export function Kompetitor() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <Card>
-          <CardHeader
-            title="Eksposur Produk per Kompetitor"
-            subtitle="Breakdown eksposur media & percakapan per produk"
-            action={
-              <select
-                value={kompetitorTerpilih?.id ?? ''}
-                onChange={(e) => setKompetitorId(e.target.value)}
-                className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-700 outline-none focus:border-brand-navy-400 focus:ring-2 focus:ring-brand-navy-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-              >
-                {ranking.map((k) => (
-                  <option key={k.id} value={k.id}>
-                    {k.nama}
-                  </option>
-                ))}
-              </select>
-            }
-          />
-          <CardContent>
-            {kompetitorTerpilih && kompetitorTerpilih.produkEksposur.length > 0 ? (
-              <ResponsiveContainer width="100%" height={Math.max(220, kompetitorTerpilih.produkEksposur.length * 44)}>
-                <BarChart data={kompetitorTerpilih.produkEksposur} layout="vertical" margin={{ left: 24 }}>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                  <XAxis type="number" fontSize={12} allowDecimals={false} />
-                  <YAxis type="category" dataKey="produk" fontSize={11} width={140} />
-                  <Tooltip formatter={(v) => Number(v).toLocaleString('id-ID')} />
-                  <Bar dataKey="eksposur" fill="#033744" radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <p className="text-sm text-slate-500 dark:text-slate-400">Belum ada data produk untuk kompetitor ini.</p>
-            )}
+        <Card className="flex h-full flex-col">
+          <CardHeader title="Sentiment Comparison" subtitle="Skor sentimen tiap kompetitor (0–100)" />
+          <CardContent className="flex-1">
+            <ResponsiveContainer width="100%" height="100%" minHeight={280}>
+              <BarChart data={sentimentData} layout="vertical" margin={{ left: 24 }}>
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                <XAxis type="number" domain={[0, 100]} fontSize={12} />
+                <YAxis type="category" dataKey="name" fontSize={11} width={130} />
+                <Tooltip />
+                <Bar dataKey="value" fill="#033744" radius={[0, 4, 4, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
 
@@ -241,18 +221,38 @@ export function Kompetitor() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader title="Sentiment Comparison" subtitle="Skor sentimen tiap kompetitor (0–100)" />
-          <CardContent>
-            <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={sentimentData} layout="vertical" margin={{ left: 24 }}>
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                <XAxis type="number" domain={[0, 100]} fontSize={12} />
-                <YAxis type="category" dataKey="name" fontSize={11} width={130} />
-                <Tooltip />
-                <Bar dataKey="value" fill="#033744" radius={[0, 4, 4, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+        <Card className="flex h-full flex-col">
+          <CardHeader
+            title="Eksposur Produk per Kompetitor"
+            subtitle="Breakdown eksposur media & percakapan per produk"
+            action={
+              <select
+                value={kompetitorTerpilih?.id ?? ''}
+                onChange={(e) => setKompetitorId(e.target.value)}
+                className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-700 outline-none focus:border-brand-navy-400 focus:ring-2 focus:ring-brand-navy-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+              >
+                {ranking.map((k) => (
+                  <option key={k.id} value={k.id}>
+                    {k.nama}
+                  </option>
+                ))}
+              </select>
+            }
+          />
+          <CardContent className="flex-1">
+            {kompetitorTerpilih && kompetitorTerpilih.produkEksposur.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%" minHeight={220}>
+                <BarChart data={kompetitorTerpilih.produkEksposur} layout="vertical" margin={{ left: 24 }}>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                  <XAxis type="number" fontSize={12} allowDecimals={false} />
+                  <YAxis type="category" dataKey="produk" fontSize={11} width={140} />
+                  <Tooltip formatter={(v) => Number(v).toLocaleString('id-ID')} />
+                  <Bar dataKey="eksposur" fill="#033744" radius={[0, 4, 4, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-sm text-slate-500 dark:text-slate-400">Belum ada data produk untuk kompetitor ini.</p>
+            )}
           </CardContent>
         </Card>
       </div>
