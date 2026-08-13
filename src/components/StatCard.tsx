@@ -13,10 +13,10 @@ export function TrendDelta({
   className?: string
 }) {
   if (change === null) {
-    return <span className={cn('text-xs font-medium text-slate-400', className)}>Baru</span>
+    return <span className={cn('text-xs font-medium text-slate-400', className)}>New</span>
   }
   if (Math.abs(change) < 3) {
-    return <span className={cn('text-xs font-medium text-slate-400', className)}>Stabil</span>
+    return <span className={cn('text-xs font-medium text-slate-400', className)}>→ Stable</span>
   }
   const naik = change > 0
   const bagus = goodDirection === 'up' ? naik : !naik

@@ -24,12 +24,43 @@ import { TimelineFilter } from '@/components/TimelineFilter'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { SentimenBadge } from '@/components/ui/Badge'
 import { daftarBerita, semuaJenisMedia } from '@/data/mockData'
-import { cocokPeriode, hitungPerHari, hitungTrenRange, PERIODE_DEFAULT, topN } from '@/lib/aggregations'
-import type { PeriodeValue } from '@/lib/aggregations'
+import {
+  cocokPeriode,
+  dalamRentang,
+  hitungPerHari,
+  hitungPerubahanPersen,
+  hitungReputationIssues,
+  hitungTrenRange,
+  periodeSebelumnya,
+  PERIODE_DEFAULT,
+  topN,
+} from '@/lib/aggregations'
+import type { PeriodeValue, RiskKategori } from '@/lib/aggregations'
 import { cn } from '@/lib/utils'
 import { ISU_LABEL, MEDIA_LABEL, semuaIsu, subIsuByIsu } from '@/types'
 import type { Berita, Isu, Sentimen } from '@/types'
-import { Newspaper, Flame, Radio } from 'lucide-react'
+import { Activity, AlertTriangle, Newspaper, Radio } from 'lucide-react'
+
+const RISK_META: Record<RiskKategori, { emoji: string; label: string; className: string }> = {
+  'High Risk': { emoji: '🔴', label: 'High Risk', className: 'bg-rose-50 text-rose-700 ring-rose-600/20 dark:bg-rose-500/10 dark:text-rose-400' },
+  'Emerging Risk': { emoji: '🟠', label: 'Trending / Emerging', className: 'bg-orange-50 text-orange-700 ring-orange-600/20 dark:bg-orange-500/10 dark:text-orange-400' },
+  Monitor: { emoji: '🟡', label: 'Monitor', className: 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-500/10 dark:text-amber-400' },
+  'Positive Opportunity': { emoji: '🟢', label: 'Positive Opportunity', className: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-500/10 dark:text-emerald-400' },
+}
+
+function RiskKategoriBadge({ value }: { value: RiskKategori }) {
+  const meta = RISK_META[value]
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset whitespace-nowrap',
+        meta.className,
+      )}
+    >
+      {meta.emoji} {meta.label}
+    </span>
+  )
+}
 
 const SENTIMEN_COLOR: Record<string, string> = {
   Positif: '#10b981',
@@ -148,9 +179,43 @@ export function IsuDetail() {
     [isu, periode, sumberData],
   )
 
+  const periodeLalu = useMemo(() => periodeSebelumnya(periode), [periode])
+  const itemsSebelumnya = useMemo(
+    () =>
+      daftarBerita.filter(
+        (b) =>
+          b.isu === isu &&
+          dalamRentang(b.tanggal, periodeLalu.dari, periodeLalu.sampai) &&
+          (!sumberData || b.jenisMedia === sumberData),
+      ),
+    [isu, periodeLalu, sumberData],
+  )
+
   const volume = items.length
-  const viral = items.filter((b) => b.isViral).length
+  const volumeLalu = itemsSebelumnya.length
   const mediaAktif = useMemo(() => new Set(items.map((b) => b.sumber)).size, [items])
+  const mediaAktifLalu = useMemo(() => new Set(itemsSebelumnya.map((b) => b.sumber)).size, [itemsSebelumnya])
+
+  const totalEngagement = useMemo(() => items.reduce((s, b) => s + b.engagement, 0), [items])
+  const totalEngagementLalu = useMemo(() => itemsSebelumnya.reduce((s, b) => s + b.engagement, 0), [itemsSebelumnya])
+
+  const sentimenNegatifPct = useMemo(
+    () => (volume === 0 ? 0 : Math.round((items.filter((b) => b.sentimen === 'Negatif').length / volume) * 100)),
+    [items, volume],
+  )
+  const sentimenNegatifPctLalu = useMemo(
+    () =>
+      volumeLalu === 0
+        ? 0
+        : Math.round((itemsSebelumnya.filter((b) => b.sentimen === 'Negatif').length / volumeLalu) * 100),
+    [itemsSebelumnya, volumeLalu],
+  )
+
+  const reputationIssues = useMemo(() => hitungReputationIssues(items, itemsSebelumnya), [items, itemsSebelumnya])
+  const issueAlerts = useMemo(
+    () => [...reputationIssues].sort((a, b) => b.riskScore - a.riskScore).slice(0, 6),
+    [reputationIssues],
+  )
 
   const topikUtama = useMemo(() => topN(items, 'subIsu', subIsuByIsu[isu].length), [items, isu])
 
@@ -276,11 +341,60 @@ export function IsuDetail() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <StatCard label="Total News" value={volume} icon={Newspaper} />
-        <StatCard label="Active Media" value={mediaAktif} icon={Radio} />
-        <StatCard label="Viral Issues" value={viral} icon={Flame} tone="negative" />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard
+          label="Total News"
+          value={volume}
+          icon={Newspaper}
+          change={hitungPerubahanPersen(volume, volumeLalu)}
+        />
+        <StatCard
+          label="Active Media"
+          value={mediaAktif}
+          icon={Radio}
+          change={hitungPerubahanPersen(mediaAktif, mediaAktifLalu)}
+        />
+        <StatCard
+          label="Total Engagement"
+          value={totalEngagement.toLocaleString('id-ID')}
+          icon={Activity}
+          change={hitungPerubahanPersen(totalEngagement, totalEngagementLalu)}
+        />
+        <StatCard
+          label="Negative Sentiment"
+          value={`${sentimenNegatifPct}%`}
+          icon={AlertTriangle}
+          tone="negative"
+          change={hitungPerubahanPersen(sentimenNegatifPct, sentimenNegatifPctLalu)}
+          goodDirection="down"
+        />
       </div>
+
+      <Card>
+        <CardHeader
+          title="Issue Alert / Issue Momentum"
+          subtitle="Issues prioritized by volume, engagement, and sentiment vs. the previous period"
+        />
+        <CardContent className="space-y-2.5">
+          {issueAlerts.map((i) => (
+            <div
+              key={i.subIsu}
+              className="flex items-center justify-between gap-3 border-b border-slate-100 pb-2.5 last:border-0 last:pb-0 dark:border-slate-800"
+            >
+              <div>
+                <p className="text-sm font-medium text-slate-800 dark:text-slate-100">{i.subIsu}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {i.exposure} exposure · {i.negatifPct}% negative · {i.engagement.toLocaleString('id-ID')} interactions
+                </p>
+              </div>
+              <RiskKategoriBadge value={i.riskKategori} />
+            </div>
+          ))}
+          {issueAlerts.length === 0 && (
+            <p className="text-sm text-slate-400">No issues to flag in this period.</p>
+          )}
+        </CardContent>
+      </Card>
 
       {isu === 'BSI' && (
         <div>
