@@ -321,17 +321,17 @@ export function IsuDetail() {
       </div>
 
       {(isu === 'Perbankan' || isu === 'BSI') && (
-        <div className="flex gap-1 border-b border-slate-200 dark:border-slate-800">
+        <div className="inline-flex gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800/60">
           {TAB_ITEMS.map((tab) => (
             <NavLink
               key={tab.to}
               to={tab.to}
               className={({ isActive }) =>
                 cn(
-                  'border-b-2 px-4 py-2 text-sm font-medium transition-colors',
+                  'rounded-lg px-5 py-2 text-sm font-semibold transition-all',
                   isActive
-                    ? 'border-brand-navy-600 text-brand-navy-700 dark:border-brand-navy-400 dark:text-brand-navy-400'
-                    : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200',
+                    ? 'bg-white text-brand-navy-700 shadow-sm dark:bg-slate-700 dark:text-brand-powder'
+                    : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200',
                 )
               }
             >
