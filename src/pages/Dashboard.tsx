@@ -45,8 +45,8 @@ const SENTIMEN_COLOR: Record<string, string> = {
 }
 
 const ISU_COLOR: Record<Isu, string> = {
-  Perbankan: '#0d9488',
-  BSI: '#6366f1',
+  Perbankan: '#033744',
+  BSI: '#ff4900',
 }
 
 function sentimenDominan(sentimenList: Sentimen[]): Sentimen {
@@ -145,7 +145,7 @@ export function Dashboard() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {ringkasanIsu.map((k) => (
             <Link key={k.isu} to={`/isu/${k.isu}`}>
-              <Card className="p-4 transition-colors hover:border-teal-300 dark:hover:border-teal-700">
+              <Card className="p-4 transition-colors hover:border-brand-navy-300 dark:hover:border-brand-navy-700">
                 <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{k.isu}</p>
                 <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">
                   {k.volume}
@@ -219,7 +219,7 @@ export function Dashboard() {
                 <XAxis type="number" fontSize={12} allowDecimals={false} />
                 <YAxis type="category" dataKey="isu" fontSize={12} width={80} />
                 <Tooltip formatter={(v) => Number(v).toLocaleString('id-ID')} />
-                <Bar dataKey="engagement" fill="#6366f1" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="engagement" fill="#ff4900" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -234,15 +234,15 @@ export function Dashboard() {
               <AreaChart data={trenHarian}>
                 <defs>
                   <linearGradient id="colorJumlah" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#0d9488" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#0d9488" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#033744" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="#033744" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="tanggal" fontSize={12} tickLine={false} />
                 <YAxis fontSize={12} tickLine={false} allowDecimals={false} />
                 <Tooltip />
-                <Area type="monotone" dataKey="jumlah" stroke="#0d9488" fill="url(#colorJumlah)" strokeWidth={2} />
+                <Area type="monotone" dataKey="jumlah" stroke="#033744" fill="url(#colorJumlah)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
@@ -283,7 +283,7 @@ export function Dashboard() {
                 <XAxis type="number" fontSize={12} allowDecimals={false} />
                 <YAxis type="category" dataKey="name" fontSize={11} width={110} />
                 <Tooltip />
-                <Bar dataKey="value" fill="#0d9488" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="value" fill="#033744" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>

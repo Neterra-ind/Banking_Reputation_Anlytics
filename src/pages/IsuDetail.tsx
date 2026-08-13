@@ -259,7 +259,7 @@ export function IsuDetail() {
                 cn(
                   'border-b-2 px-4 py-2 text-sm font-medium transition-colors',
                   isActive
-                    ? 'border-teal-600 text-teal-700 dark:border-teal-400 dark:text-teal-400'
+                    ? 'border-brand-navy-600 text-brand-navy-700 dark:border-brand-navy-400 dark:text-brand-navy-400'
                     : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200',
                 )
               }
@@ -342,7 +342,7 @@ export function IsuDetail() {
                     className="block w-full border-b border-slate-100 pb-2 text-left last:border-0 last:pb-0 dark:border-slate-800"
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <p className="text-sm font-medium text-slate-800 hover:text-teal-700 dark:text-slate-100 dark:hover:text-teal-400">
+                      <p className="text-sm font-medium text-slate-800 hover:text-brand-navy-700 dark:text-slate-100 dark:hover:text-brand-navy-400">
                         {b.judul}
                       </p>
                       <SentimenBadge value={b.sentimen} />
@@ -363,15 +363,15 @@ export function IsuDetail() {
                     <AreaChart data={trenKategoriProduk}>
                       <defs>
                         <linearGradient id="colorKategori" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#0d9488" stopOpacity={0.4} />
-                          <stop offset="95%" stopColor="#0d9488" stopOpacity={0} />
+                          <stop offset="5%" stopColor="#033744" stopOpacity={0.4} />
+                          <stop offset="95%" stopColor="#033744" stopOpacity={0} />
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} />
                       <XAxis dataKey="tanggal" fontSize={11} tickLine={false} />
                       <YAxis fontSize={11} tickLine={false} allowDecimals={false} />
                       <Tooltip />
-                      <Area type="monotone" dataKey="jumlah" stroke="#0d9488" fill="url(#colorKategori)" strokeWidth={2} />
+                      <Area type="monotone" dataKey="jumlah" stroke="#033744" fill="url(#colorKategori)" strokeWidth={2} />
                     </AreaChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -413,7 +413,7 @@ export function IsuDetail() {
                         <XAxis type="number" fontSize={11} allowDecimals={false} />
                         <YAxis type="category" dataKey="name" fontSize={11} width={80} />
                         <Tooltip />
-                        <Bar dataKey="value" fill="#6366f1" radius={[0, 4, 4, 0]} />
+                        <Bar dataKey="value" fill="#ff4900" radius={[0, 4, 4, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
                   )}
@@ -463,8 +463,8 @@ export function IsuDetail() {
                     className={cn(
                       'rounded-full px-3 py-1 font-medium transition-colors',
                       isActive
-                        ? 'bg-teal-600 text-white dark:bg-teal-500'
-                        : 'bg-teal-50 text-teal-700 hover:bg-teal-100 dark:bg-teal-500/10 dark:text-teal-400 dark:hover:bg-teal-500/20',
+                        ? 'bg-brand-navy-600 text-white dark:bg-brand-navy-500'
+                        : 'bg-brand-navy-50 text-brand-navy-700 hover:bg-brand-navy-100 dark:bg-brand-navy-500/10 dark:text-brand-navy-400 dark:hover:bg-brand-navy-500/20',
                     )}
                   >
                     {t.name} <span className="text-xs opacity-70">({t.value})</span>
@@ -487,7 +487,7 @@ export function IsuDetail() {
                 onClick={() => setSelected(b)}
                 className="block w-full border-b border-slate-100 pb-2 text-left last:border-0 last:pb-0 dark:border-slate-800"
               >
-                <p className="text-sm font-medium text-slate-800 hover:text-teal-700 dark:text-slate-100 dark:hover:text-teal-400">
+                <p className="text-sm font-medium text-slate-800 hover:text-brand-navy-700 dark:text-slate-100 dark:hover:text-brand-navy-400">
                   {b.judul}
                 </p>
                 <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">

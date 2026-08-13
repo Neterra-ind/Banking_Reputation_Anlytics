@@ -14,7 +14,7 @@ export function StatCard({
   tone?: 'default' | 'positive' | 'negative' | 'warning'
 }) {
   const toneStyle = {
-    default: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
+    default: 'bg-brand-powder-100 text-brand-navy-600 dark:bg-slate-800 dark:text-brand-powder',
     positive:
       'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400',
     negative: 'bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400',

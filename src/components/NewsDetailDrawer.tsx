@@ -18,7 +18,7 @@ export function NewsDetailDrawer({
       <div className="relative flex h-full w-full max-w-lg flex-col overflow-y-auto bg-white shadow-xl dark:bg-slate-900">
         <div className="flex items-start justify-between gap-2 border-b border-slate-100 px-5 py-4 dark:border-slate-800">
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-teal-600 dark:text-teal-400">
+            <p className="text-xs font-medium uppercase tracking-wide text-brand-navy-600 dark:text-brand-navy-400">
               AI Insight · {berita.isu} / {berita.subIsu}
             </p>
             <h2 className="mt-1 text-base font-semibold text-slate-900 dark:text-slate-100">
@@ -83,7 +83,7 @@ export function NewsDetailDrawer({
               {berita.unitKerjaTerdampak.map((s) => (
                 <span
                   key={s}
-                  className="rounded-md bg-teal-50 px-2 py-0.5 text-xs text-teal-700 dark:bg-teal-500/10 dark:text-teal-400"
+                  className="rounded-md bg-brand-navy-50 px-2 py-0.5 text-xs text-brand-navy-700 dark:bg-brand-navy-500/10 dark:text-brand-navy-400"
                 >
                   {s}
                 </span>

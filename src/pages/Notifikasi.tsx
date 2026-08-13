@@ -79,7 +79,7 @@ export function Notifikasi() {
           return (
             <Card key={alert.id} className="p-4">
               <CardContent className="flex items-start gap-3 p-0">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-600 dark:bg-teal-500/10 dark:text-teal-400">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-navy-50 text-brand-navy-600 dark:bg-brand-navy-500/10 dark:text-brand-navy-400">
                   <Icon className="h-4 w-4" />
                 </div>
                 <div className="min-w-0 flex-1">

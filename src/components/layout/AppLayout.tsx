@@ -65,7 +65,7 @@ export function AppLayout() {
               className={cn(
                 'flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors',
                 isNavItemActive(location.pathname, item)
-                  ? 'bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-400'
+                  ? 'bg-brand-navy-50 text-brand-navy-700 dark:bg-brand-navy-500/10 dark:text-brand-navy-400'
                   : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800',
               )}
             >
@@ -89,7 +89,7 @@ export function AppLayout() {
               className={cn(
                 'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                 isNavItemActive(location.pathname, item)
-                  ? 'bg-teal-50 text-teal-700 dark:bg-teal-500/10 dark:text-teal-400'
+                  ? 'bg-brand-navy-50 text-brand-navy-700 dark:bg-brand-navy-500/10 dark:text-brand-navy-400'
                   : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800',
               )}
             >

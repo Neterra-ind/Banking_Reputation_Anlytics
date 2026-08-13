@@ -167,7 +167,7 @@ export function BrandPerception() {
               <XAxis type="number" fontSize={12} allowDecimals={false} />
               <YAxis type="category" dataKey="topik" fontSize={11} width={170} />
               <Tooltip formatter={(v) => Number(v).toLocaleString('id-ID')} />
-              <Bar dataKey="jumlah" fill="#0d9488" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="jumlah" fill="#033744" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -218,15 +218,15 @@ export function BrandPerception() {
               <AreaChart data={engagementChart}>
                 <defs>
                   <linearGradient id="colorEngagement" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#ff4900" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="#ff4900" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="tanggal" fontSize={12} tickLine={false} />
                 <YAxis fontSize={12} tickLine={false} tickFormatter={(v) => formatSingkat(Number(v))} />
                 <Tooltip formatter={(v) => Number(v).toLocaleString('id-ID')} />
-                <Area type="monotone" dataKey="allPlatform" stroke="#6366f1" fill="url(#colorEngagement)" strokeWidth={2} />
+                <Area type="monotone" dataKey="allPlatform" stroke="#ff4900" fill="url(#colorEngagement)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
@@ -287,7 +287,7 @@ export function BrandPerception() {
               <XAxis type="number" fontSize={12} allowDecimals={false} />
               <YAxis type="category" dataKey="topik" fontSize={11} width={220} />
               <Tooltip formatter={(v) => Number(v).toLocaleString('id-ID')} />
-              <Bar dataKey="jumlah" fill="#6366f1" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="jumlah" fill="#ff4900" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>

@@ -20,9 +20,9 @@ import { daftarKompetitor, semuaJenisMedia } from '@/data/mockData'
 import type { Kompetitor as KompetitorType } from '@/types'
 
 const PALETTE = [
-  '#0d9488',
+  '#033744',
   '#0891b2',
-  '#6366f1',
+  '#ff4900',
   '#8b5cf6',
   '#ec4899',
   '#f43f5e',
@@ -155,7 +155,7 @@ export function Kompetitor() {
               <select
                 value={kompetitorTerpilih?.id ?? ''}
                 onChange={(e) => setKompetitorId(e.target.value)}
-                className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-700 outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-700 outline-none focus:border-brand-navy-400 focus:ring-2 focus:ring-brand-navy-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
               >
                 {ranking.map((k) => (
                   <option key={k.id} value={k.id}>
@@ -173,7 +173,7 @@ export function Kompetitor() {
                   <XAxis type="number" fontSize={12} allowDecimals={false} />
                   <YAxis type="category" dataKey="produk" fontSize={11} width={140} />
                   <Tooltip formatter={(v) => Number(v).toLocaleString('id-ID')} />
-                  <Bar dataKey="eksposur" fill="#0d9488" radius={[0, 4, 4, 0]} />
+                  <Bar dataKey="eksposur" fill="#033744" radius={[0, 4, 4, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
@@ -216,7 +216,7 @@ export function Kompetitor() {
                 <XAxis type="number" domain={[0, 100]} fontSize={12} />
                 <YAxis type="category" dataKey="name" fontSize={11} width={130} />
                 <Tooltip />
-                <Bar dataKey="value" fill="#0d9488" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="value" fill="#033744" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
