@@ -7,6 +7,13 @@ export const semuaIsu: Isu[] = [
   'BSI',
 ]
 
+// Label tampilan bahasa Inggris untuk nilai Isu, dipakai di UI (dropdown, tabel,
+// tab) tanpa mengubah nilai internal supaya route "/isu/Perbankan" tetap stabil.
+export const ISU_LABEL: Record<Isu, string> = {
+  Perbankan: 'Banking',
+  BSI: 'BSI',
+}
+
 // Sub-isu sesuai PRD bagian 6 "Ruang Lingkup" per isu
 export const subIsuByIsu: Record<Isu, string[]> = {
   Perbankan: [
@@ -41,6 +48,11 @@ export const subIsuByIsu: Record<Isu, string[]> = {
 
 export type JenisMedia = 'Media Online' | 'Media Sosial'
 
+export const MEDIA_LABEL: Record<JenisMedia, string> = {
+  'Media Online': 'Online Media',
+  'Media Sosial': 'Social Media',
+}
+
 export const semuaMediaOnline = [
   'Kompas',
   'Detik',
@@ -63,9 +75,22 @@ export const semuaMediaSosial = [
 
 export type Sentimen = 'Positif' | 'Netral' | 'Negatif'
 
+export const SENTIMEN_LABEL: Record<Sentimen, string> = {
+  Positif: 'Positive',
+  Netral: 'Neutral',
+  Negatif: 'Negative',
+}
+
 export type RiskLevel = 'Low' | 'Medium' | 'High' | 'Critical'
 
 export type Urgensi = 'Rendah' | 'Sedang' | 'Tinggi' | 'Kritis'
+
+export const URGENSI_LABEL: Record<Urgensi, string> = {
+  Rendah: 'Low',
+  Sedang: 'Medium',
+  Tinggi: 'High',
+  Kritis: 'Critical',
+}
 
 export type Trend = 'Naik' | 'Turun' | 'Stabil'
 
@@ -105,7 +130,7 @@ export interface ProdukEksposur {
 export interface Kompetitor {
   id: string
   nama: string
-  kategori: 'Bank Syariah' | 'Bank Digital/Fintech'
+  kategori: 'Sharia Bank' | 'Digital Bank/Fintech'
   sentimentScore: number
   topIssue: string
   trend: Trend
@@ -124,6 +149,15 @@ export type TipeAlert =
   | 'Gangguan Layanan Digital'
   | 'Trending Topic'
   | 'Potensi Krisis'
+
+export const TIPE_ALERT_LABEL: Record<TipeAlert, string> = {
+  'Lonjakan Sentimen Negatif': 'Negative Sentiment Spike',
+  'Isu Viral': 'Viral Issue',
+  'Regulasi Baru': 'New Regulation',
+  'Gangguan Layanan Digital': 'Digital Service Disruption',
+  'Trending Topic': 'Trending Topic',
+  'Potensi Krisis': 'Potential Crisis',
+}
 
 export interface Alert {
   id: string

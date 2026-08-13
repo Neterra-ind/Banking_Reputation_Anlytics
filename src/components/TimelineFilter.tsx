@@ -1,10 +1,10 @@
 import type { PeriodeValue } from '@/lib/aggregations'
 
 const PRESETS: { value: PeriodeValue['preset']; label: string }[] = [
-  { value: '', label: '30 Hari Terakhir (Default)' },
-  { value: '7', label: '7 Hari Terakhir' },
-  { value: '14', label: '14 Hari Terakhir' },
-  { value: '30', label: '30 Hari Terakhir' },
+  { value: '', label: 'Last 30 Days (Default)' },
+  { value: '7', label: 'Last 7 Days' },
+  { value: '14', label: 'Last 14 Days' },
+  { value: '30', label: 'Last 30 Days' },
   { value: 'custom', label: 'Custom...' },
 ]
 
@@ -21,7 +21,7 @@ export function TimelineFilter({
   return (
     <div className="flex flex-wrap items-end gap-3">
       <label className="flex flex-col gap-1 text-xs text-slate-500 dark:text-slate-400">
-        Periode
+        Period
         <select
           value={value.preset}
           onChange={(e) => onChange({ ...value, preset: e.target.value as PeriodeValue['preset'] })}
@@ -37,7 +37,7 @@ export function TimelineFilter({
       {value.preset === 'custom' && (
         <>
           <label className="flex flex-col gap-1 text-xs text-slate-500 dark:text-slate-400">
-            Dari
+            From
             <input
               type="date"
               value={value.dari}
@@ -47,7 +47,7 @@ export function TimelineFilter({
             />
           </label>
           <label className="flex flex-col gap-1 text-xs text-slate-500 dark:text-slate-400">
-            Sampai
+            To
             <input
               type="date"
               value={value.sampai}

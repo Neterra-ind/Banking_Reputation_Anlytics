@@ -34,9 +34,9 @@ function Brand() {
   return (
     <div className="flex items-center gap-2.5 px-2">
       <img src={`${import.meta.env.BASE_URL}bsi-logo.png`} alt="Logo BSI" className="h-9 w-9 object-contain" />
-      <div>
+      <div className="min-w-0">
         <p
-          className="text-xs font-bold leading-tight tracking-tight text-slate-900 dark:text-slate-100"
+          className="whitespace-nowrap text-[10px] font-bold leading-tight tracking-tight text-slate-900 dark:text-slate-100"
           style={{ fontFamily: "'Poppins', sans-serif" }}
         >
           Reputation Banking Analytics

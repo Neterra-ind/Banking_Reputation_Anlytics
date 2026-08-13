@@ -27,7 +27,7 @@ import { daftarBerita, semuaJenisMedia } from '@/data/mockData'
 import { cocokPeriode, hitungPerHari, hitungTrenRange, PERIODE_DEFAULT, topN } from '@/lib/aggregations'
 import type { PeriodeValue } from '@/lib/aggregations'
 import { cn } from '@/lib/utils'
-import { semuaIsu, subIsuByIsu } from '@/types'
+import { ISU_LABEL, MEDIA_LABEL, semuaIsu, subIsuByIsu } from '@/types'
 import type { Berita, Isu, Sentimen } from '@/types'
 import { Newspaper, Flame, Radio } from 'lucide-react'
 
@@ -38,22 +38,22 @@ const SENTIMEN_COLOR: Record<string, string> = {
 }
 
 const KATEGORI_WARNA: Record<string, { bg: string; ring: string; title: string }> = {
-  'Produk Tabungan dan Simpanan': {
+  'Savings & Deposit Products': {
     bg: 'bg-blue-50 dark:bg-blue-500/10',
     ring: 'ring-blue-500 dark:ring-blue-400',
     title: 'text-blue-800 dark:text-blue-300',
   },
-  'Produk Pembiayaan': {
+  'Financing Products': {
     bg: 'bg-amber-50 dark:bg-amber-500/10',
     ring: 'ring-amber-500 dark:ring-amber-400',
     title: 'text-amber-800 dark:text-amber-300',
   },
-  'Produk Investasi dan Transaksi': {
+  'Investment & Transaction Products': {
     bg: 'bg-violet-50 dark:bg-violet-500/10',
     ring: 'ring-violet-500 dark:ring-violet-400',
     title: 'text-violet-800 dark:text-violet-300',
   },
-  'Berita Bank Syariah Indonesia': {
+  'BSI Corporate News': {
     bg: 'bg-emerald-50 dark:bg-emerald-500/10',
     ring: 'ring-emerald-500 dark:ring-emerald-400',
     title: 'text-emerald-800 dark:text-emerald-300',
@@ -61,18 +61,18 @@ const KATEGORI_WARNA: Record<string, { bg: string; ring: string; title: string }
 }
 
 const ISU_TUJUAN: Record<Isu, string> = {
-  Perbankan: 'Memantau pemberitaan stakeholder yang berkaitan atau terhubung dengan kepentingan BSI.',
-  BSI: 'Memantau perkembangan bisnis dan produk BSI.',
+  Perbankan: 'Monitors stakeholder coverage related or connected to BSI\'s interests.',
+  BSI: 'Monitors BSI\'s business and product developments.',
 }
 
 // Klasifikasi sub-isu BSI ke dalam kelompok kategori produk, plus satu kategori umum
 // untuk topik korporat/kapabilitas yang tidak spesifik ke satu produk.
 const KATEGORI_PRODUK_BSI: { kategori: string; subIsu: string[] }[] = [
-  { kategori: 'Berita Bank Syariah Indonesia', subIsu: ['AI', 'Kinerja Keuangan', 'Transformasi Digital'] },
-  { kategori: 'Produk Tabungan dan Simpanan', subIsu: ['Tabungan'] },
-  { kategori: 'Produk Pembiayaan', subIsu: ['Pembiayaan', 'UMKM', 'KPR', 'Haji', 'Umrah'] },
+  { kategori: 'BSI Corporate News', subIsu: ['AI', 'Kinerja Keuangan', 'Transformasi Digital'] },
+  { kategori: 'Savings & Deposit Products', subIsu: ['Tabungan'] },
+  { kategori: 'Financing Products', subIsu: ['Pembiayaan', 'UMKM', 'KPR', 'Haji', 'Umrah'] },
   {
-    kategori: 'Produk Investasi dan Transaksi',
+    kategori: 'Investment & Transaction Products',
     subIsu: ['Bullion/Emas', 'Digital Banking', 'Mobile Banking', 'BYOND', 'API Banking'],
   },
 ]
@@ -80,16 +80,16 @@ const KATEGORI_PRODUK_BSI: { kategori: string; subIsu: string[] }[] = [
 // Nama & jabatan narasumber generik (mock) yang mewakili tiap kategori
 // stakeholder pada berita, bukan individu nyata.
 const NARASUMBER_NAMA: Record<string, { nama: string; jabatan: string }> = {
-  OJK: { nama: 'Ahmad Fadli', jabatan: 'Juru Bicara OJK' },
-  'Bank Indonesia': { nama: 'Rina Kartika', jabatan: 'Juru Bicara BI' },
-  'DSN-MUI': { nama: 'Miftahul Huda', jabatan: 'Anggota DSN-MUI' },
-  Nasabah: { nama: 'Budi Santoso', jabatan: 'Nasabah BSI' },
-  'Media Massa': { nama: 'Rudi Hartono', jabatan: 'Jurnalis' },
-  Investor: { nama: 'Dewi Lestari', jabatan: 'Analis Investasi' },
-  Regulator: { nama: 'Hendra Wijaya', jabatan: 'Pejabat Regulator' },
-  'Komunitas Syariah': { nama: 'Siti Aminah', jabatan: 'Tokoh Komunitas Syariah' },
-  Pemerintah: { nama: 'Joko Prasetyo', jabatan: 'Pejabat Pemerintah' },
-  'Mitra Bisnis': { nama: 'Andi Saputra', jabatan: 'Perwakilan Mitra Bisnis' },
+  OJK: { nama: 'Ahmad Fadli', jabatan: 'OJK Spokesperson' },
+  'Bank Indonesia': { nama: 'Rina Kartika', jabatan: 'BI Spokesperson' },
+  'DSN-MUI': { nama: 'Miftahul Huda', jabatan: 'DSN-MUI Member' },
+  Customer: { nama: 'Budi Santoso', jabatan: 'BSI Customer' },
+  Media: { nama: 'Rudi Hartono', jabatan: 'Journalist' },
+  Investor: { nama: 'Dewi Lestari', jabatan: 'Investment Analyst' },
+  Regulator: { nama: 'Hendra Wijaya', jabatan: 'Regulatory Official' },
+  'Sharia Community': { nama: 'Siti Aminah', jabatan: 'Sharia Community Figure' },
+  Government: { nama: 'Joko Prasetyo', jabatan: 'Government Official' },
+  'Business Partner': { nama: 'Andi Saputra', jabatan: 'Business Partner Representative' },
 }
 
 function sentimenDominan(sentimenList: Sentimen[]): Sentimen | null {
@@ -100,19 +100,19 @@ function sentimenDominan(sentimenList: Sentimen[]): Sentimen | null {
 }
 
 const TAB_ITEMS: { to: string; label: string }[] = [
-  { to: '/isu/Perbankan', label: 'Perbankan' },
+  { to: '/isu/Perbankan', label: 'Banking' },
   { to: '/isu/BSI', label: 'BSI' },
 ]
 
 const columns: ColumnDef<Berita, any>[] = [
   {
     accessorKey: 'tanggal',
-    header: 'Tanggal',
+    header: 'Date',
     cell: (info) => <span className="whitespace-nowrap text-slate-500">{info.getValue<string>()}</span>,
   },
   {
     accessorKey: 'judul',
-    header: 'Judul Berita',
+    header: 'Headline',
     cell: (info) => (
       <div className="max-w-md">
         <p className="font-medium text-slate-800 dark:text-slate-100">{info.getValue<string>()}</p>
@@ -124,7 +124,7 @@ const columns: ColumnDef<Berita, any>[] = [
   },
   {
     accessorKey: 'sentimen',
-    header: 'Sentimen',
+    header: 'Sentiment',
     cell: (info) => <SentimenBadge value={info.getValue()} />,
   },
 ]
@@ -240,11 +240,17 @@ export function IsuDetail() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Isu {isu}</h1>
+          <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{ISU_LABEL[isu]} Issue</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">{ISU_TUJUAN[isu]}</p>
         </div>
         <div className="flex flex-wrap items-end gap-3">
-          <FilterSelect label="Sumber Data" value={sumberData} options={[...semuaJenisMedia]} onChange={setSumberData} />
+          <FilterSelect
+            label="Data Source"
+            value={sumberData}
+            options={[...semuaJenisMedia]}
+            labelMap={MEDIA_LABEL}
+            onChange={setSumberData}
+          />
           <TimelineFilter value={periode} onChange={setPeriode} />
         </div>
       </div>
@@ -271,17 +277,16 @@ export function IsuDetail() {
       )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <StatCard label="Total Berita" value={volume} icon={Newspaper} />
-        <StatCard label="Media Aktif" value={mediaAktif} icon={Radio} />
-        <StatCard label="Isu Viral" value={viral} icon={Flame} tone="negative" />
+        <StatCard label="Total News" value={volume} icon={Newspaper} />
+        <StatCard label="Active Media" value={mediaAktif} icon={Radio} />
+        <StatCard label="Viral Issues" value={viral} icon={Flame} tone="negative" />
       </div>
 
       {isu === 'BSI' && (
         <div>
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Berita BSI dan Produk</h2>
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">BSI News & Products</h2>
           <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">
-            Klasifikasi pemberitaan produk BSI ke dalam 4 kelompok kategori. Klik salah satu kategori untuk melihat
-            berita terkait.
+            BSI product coverage classified into 4 category groups. Click a category to see related news.
           </p>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -304,7 +309,7 @@ export function IsuDetail() {
                     <p className={cn('text-sm font-semibold', KATEGORI_WARNA[k.kategori]?.title)}>{k.kategori}</p>
                     <div className="mt-3">
                       <p className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{k.volume}</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">Berita/Ekspos</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">News/Exposure</p>
                       {k.sentimenDominan && (
                         <div className="mt-1.5">
                           <SentimenBadge value={k.sentimenDominan} />
@@ -329,10 +334,10 @@ export function IsuDetail() {
 
           <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
             <Card className={cn('lg:col-span-1', warnaKategoriAktif?.bg)}>
-              <CardHeader title="Berita Kategori Produk" subtitle={activeKategoriProduk ?? undefined} />
+              <CardHeader title="Category News" subtitle={activeKategoriProduk ?? undefined} />
               <CardContent className="space-y-2.5">
                 {beritaKategoriProduk.length === 0 && (
-                  <p className="text-sm text-slate-400">Tidak ada berita untuk kategori ini pada periode ini.</p>
+                  <p className="text-sm text-slate-400">No news for this category in this period.</p>
                 )}
                 {beritaKategoriProduk.map((b) => (
                   <button
@@ -357,7 +362,7 @@ export function IsuDetail() {
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-2">
               <Card className={warnaKategoriAktif?.bg}>
-                <CardHeader title="Tren Waktu" subtitle={activeKategoriProduk ?? undefined} />
+                <CardHeader title="Time Trend" subtitle={activeKategoriProduk ?? undefined} />
                 <CardContent>
                   <ResponsiveContainer width="100%" height={200}>
                     <AreaChart data={trenKategoriProduk}>
@@ -378,7 +383,7 @@ export function IsuDetail() {
               </Card>
 
               <Card className={warnaKategoriAktif?.bg}>
-                <CardHeader title="Sentimen" subtitle={activeKategoriProduk ?? undefined} />
+                <CardHeader title="Sentiment" subtitle={activeKategoriProduk ?? undefined} />
                 <CardContent>
                   <ResponsiveContainer width="100%" height={200}>
                     <PieChart>
@@ -402,10 +407,10 @@ export function IsuDetail() {
               </Card>
 
               <Card className={warnaKategoriAktif?.bg}>
-                <CardHeader title="Media Share" subtitle="Porsi sumber pemberitaan" />
+                <CardHeader title="Media Share" subtitle="Share of news sources" />
                 <CardContent>
                   {mediaShareKategoriProduk.length === 0 ? (
-                    <p className="text-sm text-slate-400">Tidak ada data media untuk kategori ini.</p>
+                    <p className="text-sm text-slate-400">No media data for this category.</p>
                   ) : (
                     <ResponsiveContainer width="100%" height={200}>
                       <BarChart data={mediaShareKategoriProduk} layout="vertical" margin={{ left: 16 }}>
@@ -421,10 +426,10 @@ export function IsuDetail() {
               </Card>
 
               <Card className={warnaKategoriAktif?.bg}>
-                <CardHeader title="Narasumber Berita" subtitle="Nama narasumber yang memberikan pernyataan" />
+                <CardHeader title="News Spokespersons" subtitle="Names of spokespeople quoted" />
                 <CardContent>
                   {narasumberKategoriProduk.length === 0 ? (
-                    <p className="text-sm text-slate-400">Tidak ada narasumber untuk kategori ini.</p>
+                    <p className="text-sm text-slate-400">No spokespersons for this category.</p>
                   ) : (
                     <ResponsiveContainer width="100%" height={narasumberKategoriProduk.length * 50}>
                       <BarChart data={narasumberKategoriProduk} layout="vertical" margin={{ left: 16 }}>
@@ -447,7 +452,7 @@ export function IsuDetail() {
       {isu === 'Perbankan' && (
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader title="Topik Utama" subtitle="Klik salah satu topik untuk melihat berita terkait" />
+          <CardHeader title="Top Topics" subtitle="Click a topic to see related news" />
           <CardContent>
             <div className="flex flex-wrap gap-2">
               {topikUtama.map((t) => {
@@ -475,10 +480,10 @@ export function IsuDetail() {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader title="Berita Terkait Topik" subtitle={activeTopik ?? undefined} />
+          <CardHeader title="News Related to Topic" subtitle={activeTopik ?? undefined} />
           <CardContent className="space-y-2.5">
             {beritaTopik.length === 0 && (
-              <p className="text-sm text-slate-400">Tidak ada berita untuk topik ini pada periode ini.</p>
+              <p className="text-sm text-slate-400">No news for this topic in this period.</p>
             )}
             {beritaTopik.map((b) => (
               <button
@@ -501,7 +506,7 @@ export function IsuDetail() {
       )}
 
       <Card className="p-4">
-        <DataTable data={items} columns={columns} searchPlaceholder="Cari judul, sumber..." onRowClick={setSelected} />
+        <DataTable data={items} columns={columns} searchPlaceholder="Search headline, source..." onRowClick={setSelected} />
       </Card>
 
       <NewsDetailDrawer berita={selected} onClose={() => setSelected(null)} />

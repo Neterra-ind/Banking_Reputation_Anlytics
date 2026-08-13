@@ -44,7 +44,7 @@ interface KompetitorRanked extends KompetitorType {
 const columns: ColumnDef<KompetitorRanked, any>[] = [
   {
     accessorKey: 'nama',
-    header: 'Kompetitor',
+    header: 'Competitor',
     cell: (info) => (
       <div>
         <p className="font-medium text-slate-800 dark:text-slate-100">{info.getValue<string>()}</p>
@@ -159,15 +159,21 @@ export function Kompetitor() {
         <div>
           <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Competitor Dashboard</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Perbandingan posisi BSI dengan kompetitor bank syariah dan bank digital/fintech.
+            Compare BSI's position against sharia bank and digital bank/fintech competitors.
           </p>
         </div>
-        <FilterSelect label="Sumber Data" value={sumberData} options={[...semuaJenisMedia]} onChange={setSumberData} />
+        <FilterSelect
+          label="Data Source"
+          value={sumberData}
+          options={[...semuaJenisMedia]}
+          labelMap={{ 'Media Sosial': 'Social Media' }}
+          onChange={setSumberData}
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Card className="flex h-full flex-col">
-          <CardHeader title="Sentiment Comparison" subtitle="Skor sentimen tiap kompetitor (0–100)" />
+          <CardHeader title="Sentiment Comparison" subtitle="Sentiment score per competitor (0–100)" />
           <CardContent className="flex-1">
             <ResponsiveContainer width="100%" height="100%" minHeight={280}>
               <BarChart data={sentimentData} layout="vertical" margin={{ left: 24 }}>
@@ -182,7 +188,7 @@ export function Kompetitor() {
         </Card>
 
         <Card>
-          <CardHeader title="Tren waktu" subtitle="Eksposur media harian tiap kompetitor · 14 hari terakhir" />
+          <CardHeader title="Time Trend" subtitle="Daily media exposure per competitor · last 14 days" />
           <CardContent>
             <ResponsiveContainer width="100%" height={360}>
               <LineChart data={trenData}>
@@ -217,14 +223,14 @@ export function Kompetitor() {
                 ))}
               </LineChart>
             </ResponsiveContainer>
-            <p className="mt-2 text-xs text-slate-400">Klik nama kompetitor pada legenda untuk menampilkan/menyembunyikan garis.</p>
+            <p className="mt-2 text-xs text-slate-400">Click a competitor's name in the legend to show/hide its line.</p>
           </CardContent>
         </Card>
 
         <Card className="flex h-full flex-col">
           <CardHeader
-            title="Eksposur Produk per Kompetitor"
-            subtitle="Breakdown eksposur media & percakapan per produk"
+            title="Product Exposure per Competitor"
+            subtitle="Breakdown of media & conversation exposure per product"
             action={
               <select
                 value={kompetitorTerpilih?.id ?? ''}
@@ -251,16 +257,16 @@ export function Kompetitor() {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <p className="text-sm text-slate-500 dark:text-slate-400">Belum ada data produk untuk kompetitor ini.</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">No product data available for this competitor.</p>
             )}
           </CardContent>
         </Card>
       </div>
 
       <Card>
-        <CardHeader title="Ranking Kompetitor" subtitle="Diurutkan berdasarkan Share of Voice" />
+        <CardHeader title="Competitor Ranking" subtitle="Sorted by Share of Voice" />
         <CardContent>
-          <DataTable data={ranking} columns={columns} searchPlaceholder="Cari kompetitor..." pageSize={12} />
+          <DataTable data={ranking} columns={columns} searchPlaceholder="Search competitor..." pageSize={12} />
         </CardContent>
       </Card>
     </div>

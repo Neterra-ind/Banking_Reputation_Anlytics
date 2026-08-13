@@ -21,6 +21,7 @@ import { AtSign, Camera, Music2, ThumbsUp, Video } from 'lucide-react'
 import { FilterSelect } from '@/components/FilterSelect'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { brandPerceptionData, semuaJenisMedia } from '@/data/mockData'
+import { MEDIA_LABEL } from '@/types'
 import type { PlatformBP } from '@/types'
 
 const SENTIMEN_COLOR: Record<string, string> = {
@@ -47,9 +48,9 @@ const PLATFORM_COLOR: Record<PlatformBP, string> = {
 }
 
 function formatSingkat(n: number) {
-  if (n >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(2)} M`
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)} Jt`
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)} Rb`
+  if (n >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(2)}B`
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`
   return String(n)
 }
 
@@ -93,11 +94,17 @@ export function BrandPerception() {
         <div>
           <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Complain Mapping</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Analisis persepsi brand BSI di media online &amp; media sosial · 30 hari terakhir. Seluruh data
-            adalah mock/dummy untuk keperluan demo.
+            Analysis of BSI's brand perception across online media &amp; social media · last 30 days. All data
+            is mock/dummy for demo purposes.
           </p>
         </div>
-        <FilterSelect label="Sumber Data" value={sumberData} options={[...semuaJenisMedia]} onChange={setSumberData} />
+        <FilterSelect
+          label="Data Source"
+          value={sumberData}
+          options={[...semuaJenisMedia]}
+          labelMap={MEDIA_LABEL}
+          onChange={setSumberData}
+        />
       </div>
 
       <Card>
@@ -116,11 +123,11 @@ export function BrandPerception() {
       <div>
         <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Media Perception</h2>
         <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">
-          Sentimen pemberitaan BSI di media online.
+          Sentiment of BSI coverage in online media.
         </p>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           <Card className="lg:col-span-2">
-            <CardHeader title="Sentiment Timeline" subtitle="Media online · harian" />
+            <CardHeader title="Sentiment Timeline" subtitle="Online media · daily" />
             <CardContent>
               <ResponsiveContainer width="100%" height={260}>
                 <LineChart data={mediaTimeline}>
@@ -138,7 +145,7 @@ export function BrandPerception() {
           </Card>
 
           <Card>
-            <CardHeader title="Media Sentiment" subtitle="Komposisi total" />
+            <CardHeader title="Media Sentiment" subtitle="Total composition" />
             <CardContent>
               <ResponsiveContainer width="100%" height={180}>
                 <PieChart>
@@ -159,7 +166,7 @@ export function BrandPerception() {
       </div>
 
       <Card>
-        <CardHeader title="Product Analysis – Mass Media" subtitle="Topik paling banyak diberitakan" />
+        <CardHeader title="Product Analysis – Mass Media" subtitle="Most covered topics" />
         <CardContent>
           <ResponsiveContainer width="100%" height={320}>
             <BarChart data={d.topikMediaMassa} layout="vertical" margin={{ left: 24 }}>
@@ -181,8 +188,8 @@ export function BrandPerception() {
           Potential Impression &amp; Engagement
         </h2>
         <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">
-          Total impression {formatSingkat(totalImpression)} · Total engagement {formatSingkat(totalEngagement)} dari
-          seluruh platform.
+          Total impressions {formatSingkat(totalImpression)} · Total engagement {formatSingkat(totalEngagement)} across
+          all platforms.
         </p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {d.platformMetrik.map((p) => {
@@ -212,7 +219,7 @@ export function BrandPerception() {
         </div>
 
         <Card className="mt-4">
-          <CardHeader title="Engagement History" subtitle="Seluruh platform · harian" />
+          <CardHeader title="Engagement History" subtitle="All platforms · daily" />
           <CardContent>
             <ResponsiveContainer width="100%" height={260}>
               <AreaChart data={engagementChart}>
@@ -236,11 +243,11 @@ export function BrandPerception() {
       <div>
         <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Public Perception</h2>
         <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">
-          Sentimen audiens/percakapan BSI di media sosial.
+          Sentiment of BSI audience/conversations on social media.
         </p>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           <Card className="lg:col-span-2">
-            <CardHeader title="Sentiment Timeline" subtitle="Audiens/media sosial · harian" />
+            <CardHeader title="Sentiment Timeline" subtitle="Audience/social media · daily" />
             <CardContent>
               <ResponsiveContainer width="100%" height={260}>
                 <LineChart data={audienceTimeline}>
@@ -258,7 +265,7 @@ export function BrandPerception() {
           </Card>
 
           <Card>
-            <CardHeader title="Audience Sentiment" subtitle="Komposisi total" />
+            <CardHeader title="Audience Sentiment" subtitle="Total composition" />
             <CardContent>
               <ResponsiveContainer width="100%" height={180}>
                 <PieChart>
@@ -279,7 +286,7 @@ export function BrandPerception() {
       </div>
 
       <Card>
-        <CardHeader title="Product Analysis – Social Media" subtitle="Topik paling banyak diperbincangkan" />
+        <CardHeader title="Product Analysis – Social Media" subtitle="Most discussed topics" />
         <CardContent>
           <ResponsiveContainer width="100%" height={360}>
             <BarChart data={d.topikMediaSosial} layout="vertical" margin={{ left: 24 }}>
@@ -296,11 +303,11 @@ export function BrandPerception() {
       <div>
         <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Complain Mapping</h2>
         <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">
-          Pemetaan jenis keluhan nasabah per platform media sosial.
+          Mapping of customer complaint types by social media platform.
         </p>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <Card>
-            <CardHeader title="Jenis Keluhan per Platform" />
+            <CardHeader title="Complaint Type per Platform" />
             <CardContent>
               <ResponsiveContainer width="100%" height={320}>
                 <BarChart data={d.jenisKeluhan} layout="vertical" margin={{ left: 24 }}>
@@ -318,7 +325,7 @@ export function BrandPerception() {
           </Card>
 
           <Card>
-            <CardHeader title="Jumlah Keluhan per Platform" />
+            <CardHeader title="Complaint Volume per Platform" />
             <CardContent>
               <ResponsiveContainer width="100%" height={320}>
                 <BarChart data={d.keluhanPerPlatform} layout="vertical" margin={{ left: 24 }}>

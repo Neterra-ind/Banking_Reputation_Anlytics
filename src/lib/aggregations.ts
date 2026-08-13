@@ -80,7 +80,7 @@ export function cocokPeriode(tanggal: string, periode: PeriodeValue): boolean {
 }
 
 function formatTanggalPendek(iso: string) {
-  return new Date(iso).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+  return new Date(iso).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 export function labelPeriode(periode: PeriodeValue): string {
@@ -88,12 +88,12 @@ export function labelPeriode(periode: PeriodeValue): string {
     if (periode.dari && periode.sampai) {
       return `${formatTanggalPendek(periode.dari)} – ${formatTanggalPendek(periode.sampai)}`
     }
-    if (periode.dari) return `sejak ${formatTanggalPendek(periode.dari)}`
-    if (periode.sampai) return `sampai ${formatTanggalPendek(periode.sampai)}`
-    return 'semua waktu'
+    if (periode.dari) return `since ${formatTanggalPendek(periode.dari)}`
+    if (periode.sampai) return `until ${formatTanggalPendek(periode.sampai)}`
+    return 'all time'
   }
-  if (!periode.preset) return '30 hari terakhir'
-  return `${periode.preset} hari terakhir`
+  if (!periode.preset) return 'last 30 days'
+  return `last ${periode.preset} days`
 }
 
 export function hitungTrenRange(berita: Berita[], dari: string, sampai: string) {

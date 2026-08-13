@@ -96,13 +96,13 @@ const MOMENTUM_META: Record<MomentumStatus, { icon: LucideIcon; label: string; c
 function narasiAlert(issue: ReputationIssue): string {
   const arah =
     issue.momentumStatus === 'Emerging'
-      ? 'muncul sebagai isu baru'
+      ? 'emerged as a new issue'
       : issue.momentumStatus === 'Rising'
-        ? `meningkat ${issue.momentumPct}%`
+        ? `rose ${issue.momentumPct}%`
         : issue.momentumStatus === 'Declining'
-          ? `menurun ${Math.abs(issue.momentumPct ?? 0)}%`
-          : 'relatif stabil'
-  return `Percakapan mengenai ${issue.subIsu} ${arah} dibanding periode sebelumnya, dengan ${issue.negatifPct}% sentimen negatif dari ${issue.exposure} pemberitaan/percakapan dan ${issue.engagement.toLocaleString('id-ID')} interaksi.`
+          ? `fell ${Math.abs(issue.momentumPct ?? 0)}%`
+          : 'stayed relatively stable'
+  return `Conversation about ${issue.subIsu} ${arah} compared to the previous period, with ${issue.negatifPct}% negative sentiment across ${issue.exposure} mentions and ${issue.engagement.toLocaleString('id-ID')} interactions.`
 }
 
 export function Dashboard() {
@@ -202,11 +202,17 @@ export function Dashboard() {
         <div>
           <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Executive Summary</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Kondisi reputasi BSI · monitoring media online dan media sosial {labelPeriode(periode)}.
+            BSI's reputation status · online and social media monitoring {labelPeriode(periode)}.
           </p>
         </div>
         <div className="flex flex-wrap items-end gap-3">
-          <FilterSelect label="Sumber Data" value={sumberData} options={[...semuaJenisMedia]} onChange={setSumberData} />
+          <FilterSelect
+            label="Data Source"
+            value={sumberData}
+            options={[...semuaJenisMedia]}
+            labelMap={{ 'Media Sosial': 'Social Media' }}
+            onChange={setSumberData}
+          />
           <TimelineFilter value={periode} onChange={setPeriode} />
         </div>
       </div>
@@ -220,13 +226,13 @@ export function Dashboard() {
           change={hitungPerubahanPersen(totalBerita, totalBeritaLalu)}
         />
         <StatCard
-          label="Total Percakapan Medsos"
+          label="Total Social Media Conversations"
           value={totalPercakapan}
           icon={MessageSquare}
           change={hitungPerubahanPersen(totalPercakapan, totalPercakapanLalu)}
         />
         <StatCard
-          label="Sentimen Negatif"
+          label="Negative Sentiment"
           value={`${sentimenNegatifPct}%`}
           icon={Radio}
           tone="negative"
@@ -243,7 +249,7 @@ export function Dashboard() {
 
       {/* B. BSI Reputation Overview */}
       <Card>
-        <CardHeader title="BSI Reputation Overview" subtitle={`Ringkasan kondisi reputasi BSI · ${labelPeriode(periode)}`} />
+        <CardHeader title="BSI Reputation Overview" subtitle={`Summary of BSI's reputation status · ${labelPeriode(periode)}`} />
         <CardContent>
           <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-6">
             {overviewMetrics.map((m) => (
@@ -261,7 +267,7 @@ export function Dashboard() {
       <Card>
         <CardHeader
           title="BSI Reputation Trend"
-          subtitle={`Media exposure vs social conversation harian · ${labelPeriode(periode)}`}
+          subtitle={`Daily media exposure vs social conversation · ${labelPeriode(periode)}`}
         />
         <CardContent>
           <ResponsiveContainer width="100%" height={280}>
@@ -287,7 +293,7 @@ export function Dashboard() {
                       : 'bg-slate-100 text-slate-600 ring-slate-500/20 dark:bg-slate-500/10 dark:text-slate-300',
                   )}
                 >
-                  {a.tipe === 'spike' ? '🔺 Spike' : '🔻 Penurunan'} · {a.tanggal}
+                  {a.tipe === 'spike' ? '🔺 Spike' : '🔻 Drop'} · {a.tanggal}
                 </span>
               ))}
             </div>
@@ -298,7 +304,7 @@ export function Dashboard() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {/* D. Reputation Sentiment */}
         <Card>
-          <CardHeader title="Reputation Sentiment" subtitle="Distribusi sentimen terhadap BSI secara keseluruhan" />
+          <CardHeader title="Reputation Sentiment" subtitle="Overall sentiment distribution toward BSI" />
           <CardContent>
             <div className="flex items-center gap-5">
               <div className="shrink-0">
@@ -326,9 +332,9 @@ export function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* F (paruh 1). Reputation Drivers */}
+        {/* F (part 1). Reputation Drivers */}
         <Card>
-          <CardHeader title="Reputation Drivers" subtitle="Faktor yang membentuk reputasi BSI" />
+          <CardHeader title="Reputation Drivers" subtitle="Factors shaping BSI's reputation" />
           <CardContent>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <div>
@@ -339,11 +345,11 @@ export function Dashboard() {
                   {positiveDrivers.map((d) => (
                     <li key={d.subIsu} className="flex items-center justify-between gap-2 text-sm">
                       <span className="text-slate-700 dark:text-slate-200">{d.subIsu}</span>
-                      <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">{d.positif} positif</span>
+                      <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">{d.positif} positive</span>
                     </li>
                   ))}
                   {positiveDrivers.length === 0 && (
-                    <p className="text-sm text-slate-400">Belum ada driver positif signifikan.</p>
+                    <p className="text-sm text-slate-400">No significant positive drivers yet.</p>
                   )}
                 </ul>
               </div>
@@ -355,11 +361,11 @@ export function Dashboard() {
                   {negativeDrivers.map((d) => (
                     <li key={d.subIsu} className="flex items-center justify-between gap-2 text-sm">
                       <span className="text-slate-700 dark:text-slate-200">{d.subIsu}</span>
-                      <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">{d.negatif} negatif</span>
+                      <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">{d.negatif} negative</span>
                     </li>
                   ))}
                   {negativeDrivers.length === 0 && (
-                    <p className="text-sm text-slate-400">Belum ada driver negatif signifikan.</p>
+                    <p className="text-sm text-slate-400">No significant negative drivers yet.</p>
                   )}
                 </ul>
               </div>
@@ -370,7 +376,7 @@ export function Dashboard() {
 
       {/* E. Top Reputation Issues */}
       <Card>
-        <CardHeader title="Top Reputation Issues" subtitle="Isu paling berpengaruh terhadap reputasi BSI" />
+        <CardHeader title="Top Reputation Issues" subtitle="Issues with the biggest impact on BSI's reputation" />
         <CardContent className="overflow-x-auto">
           <table className="w-full min-w-[560px] text-sm">
             <thead>
@@ -403,7 +409,7 @@ export function Dashboard() {
               {topIssues.length === 0 && (
                 <tr>
                   <td colSpan={6} className="py-4 text-center text-sm text-slate-400">
-                    Tidak ada isu pada periode ini.
+                    No issues in this period.
                   </td>
                 </tr>
               )}
@@ -413,9 +419,9 @@ export function Dashboard() {
       </Card>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        {/* G (paruh 1). Issue Momentum */}
+        {/* G (part 1). Issue Momentum */}
         <Card>
-          <CardHeader title="Issue Momentum" subtitle="Pergerakan isu dibanding periode sebelumnya" />
+          <CardHeader title="Issue Momentum" subtitle="Issue movement compared to the previous period" />
           <CardContent className="space-y-2.5">
             {momentumIssues.map((i) => {
               const meta = MOMENTUM_META[i.momentumStatus]
@@ -428,7 +434,7 @@ export function Dashboard() {
                   <div>
                     <p className="text-sm font-medium text-slate-800 dark:text-slate-100">{i.subIsu}</p>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                      {i.exposure} eksposur · {i.negatifPct}% negatif
+                      {i.exposure} exposure · {i.negatifPct}% negative
                     </p>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
@@ -446,16 +452,16 @@ export function Dashboard() {
               )
             })}
             {momentumIssues.length === 0 && (
-              <p className="text-sm text-slate-400">Tidak ada pergerakan isu signifikan.</p>
+              <p className="text-sm text-slate-400">No significant issue movement.</p>
             )}
           </CardContent>
         </Card>
 
-        {/* G (paruh 2). Reputation Alert */}
+        {/* G (part 2). Reputation Alert */}
         <Card>
           <CardHeader
             title="Reputation Alert"
-            subtitle="Isu yang memerlukan perhatian, diurutkan berdasarkan risk score"
+            subtitle="Issues needing attention, ranked by risk score"
             action={<AlertTriangle className="h-4 w-4 text-rose-500" />}
           />
           <CardContent className="space-y-3">
@@ -471,7 +477,7 @@ export function Dashboard() {
                 </div>
               ))}
             {topRisk.every((i) => i.riskKategori === 'Positive Opportunity') && (
-              <p className="text-sm text-slate-400">Tidak ada isu berisiko tinggi pada periode ini.</p>
+              <p className="text-sm text-slate-400">No high-risk issues in this period.</p>
             )}
           </CardContent>
         </Card>

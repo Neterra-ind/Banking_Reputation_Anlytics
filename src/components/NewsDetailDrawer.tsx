@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { X } from 'lucide-react'
 import { SentimenBadge, UrgensiBadge } from '@/components/ui/Badge'
+import { ISU_LABEL, MEDIA_LABEL } from '@/types'
 import type { Berita } from '@/types'
 
 export function NewsDetailDrawer({
@@ -19,13 +20,13 @@ export function NewsDetailDrawer({
         <div className="flex items-start justify-between gap-2 border-b border-slate-100 px-5 py-4 dark:border-slate-800">
           <div>
             <p className="text-xs font-medium uppercase tracking-wide text-brand-navy-600 dark:text-brand-navy-400">
-              AI Insight · {berita.isu} / {berita.subIsu}
+              AI Insight · {ISU_LABEL[berita.isu]} / {berita.subIsu}
             </p>
             <h2 className="mt-1 text-base font-semibold text-slate-900 dark:text-slate-100">
               {berita.judul}
             </h2>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              {berita.sumber} · {berita.jenisMedia} · {berita.tanggal}
+              {berita.sumber} · {MEDIA_LABEL[berita.jenisMedia]} · {berita.tanggal}
             </p>
           </div>
           <button
@@ -48,24 +49,24 @@ export function NewsDetailDrawer({
             )}
           </div>
 
-          <Section title="Ringkasan Otomatis">
+          <Section title="AI Summary">
             <p className="text-sm text-slate-600 dark:text-slate-300">{berita.ringkasanAI}</p>
           </Section>
 
           <div className="grid grid-cols-2 gap-4">
-            <Section title="Dampak Bisnis">
+            <Section title="Business Impact">
               <p className="text-sm text-slate-600 dark:text-slate-300">{berita.dampakBisnis}</p>
             </Section>
-            <Section title="Dampak Reputasi">
+            <Section title="Reputation Impact">
               <p className="text-sm text-slate-600 dark:text-slate-300">{berita.dampakReputasi}</p>
             </Section>
           </div>
 
-          <Section title="Peluang Bisnis">
+          <Section title="Business Opportunity">
             <p className="text-sm text-slate-600 dark:text-slate-300">{berita.peluangBisnis}</p>
           </Section>
 
-          <Section title="Stakeholder Terkait">
+          <Section title="Related Stakeholders">
             <div className="flex flex-wrap gap-1.5">
               {berita.stakeholderTerkait.map((s) => (
                 <span
@@ -78,7 +79,7 @@ export function NewsDetailDrawer({
             </div>
           </Section>
 
-          <Section title="Unit Kerja Terdampak">
+          <Section title="Affected Work Units">
             <div className="flex flex-wrap gap-1.5">
               {berita.unitKerjaTerdampak.map((s) => (
                 <span
@@ -92,12 +93,12 @@ export function NewsDetailDrawer({
           </Section>
 
           {berita.kompetitorTerkait && (
-            <Section title="Kompetitor Terkait">
+            <Section title="Related Competitor">
               <p className="text-sm text-slate-600 dark:text-slate-300">{berita.kompetitorTerkait}</p>
             </Section>
           )}
 
-          <Section title="Rekomendasi Tindak Lanjut">
+          <Section title="Follow-up Recommendations">
             <ul className="list-inside list-disc space-y-1 text-sm text-slate-600 dark:text-slate-300">
               {berita.rekomendasiAI.map((r) => (
                 <li key={r}>{r}</li>

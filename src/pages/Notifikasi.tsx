@@ -7,7 +7,7 @@ import { RiskBadge } from '@/components/ui/Badge'
 import { daftarAlert, semuaJenisMedia } from '@/data/mockData'
 import { cocokPeriode, PERIODE_DEFAULT } from '@/lib/aggregations'
 import type { PeriodeValue } from '@/lib/aggregations'
-import { semuaIsu } from '@/types'
+import { ISU_LABEL, MEDIA_LABEL, semuaIsu, TIPE_ALERT_LABEL } from '@/types'
 import type { TipeAlert } from '@/types'
 
 const TIPE_ICON: Record<TipeAlert, typeof Bell> = {
@@ -55,24 +55,30 @@ export function Notifikasi() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Notifikasi</h1>
+        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Notifications</h1>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Alert otomatis untuk lonjakan sentimen negatif, isu viral, regulasi baru, gangguan layanan digital, trending topic, dan potensi krisis.
+          Automated alerts for negative sentiment spikes, viral issues, new regulations, digital service disruptions, trending topics, and potential crises.
         </p>
       </div>
 
       <Card className="p-4">
         <div className="flex flex-wrap gap-3">
           <TimelineFilter value={periode} onChange={setPeriode} />
-          <FilterSelect label="Sumber Data" value={jenisMedia} options={[...semuaJenisMedia]} onChange={setJenisMedia} />
-          <FilterSelect label="Isu" value={isu} options={semuaIsu} onChange={setIsu} />
-          <FilterSelect label="Tipe Alert" value={tipe} options={semuaTipe} onChange={setTipe} />
+          <FilterSelect
+            label="Data Source"
+            value={jenisMedia}
+            options={[...semuaJenisMedia]}
+            labelMap={MEDIA_LABEL}
+            onChange={setJenisMedia}
+          />
+          <FilterSelect label="Issue" value={isu} options={semuaIsu} labelMap={ISU_LABEL} onChange={setIsu} />
+          <FilterSelect label="Alert Type" value={tipe} options={semuaTipe} labelMap={TIPE_ALERT_LABEL} onChange={setTipe} />
         </div>
       </Card>
 
       <div className="space-y-3">
         {filtered.length === 0 && (
-          <Card className="p-8 text-center text-sm text-slate-400">Tidak ada notifikasi yang cocok.</Card>
+          <Card className="p-8 text-center text-sm text-slate-400">No matching notifications.</Card>
         )}
         {filtered.map((alert) => {
           const Icon = TIPE_ICON[alert.tipe]
@@ -89,7 +95,7 @@ export function Notifikasi() {
                   </div>
                   <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{alert.deskripsi}</p>
                   <p className="mt-1.5 text-xs text-slate-400">
-                    {alert.tipe} · Isu {alert.isu} · {alert.jenisMedia} · {alert.tanggal} {alert.waktu}
+                    {TIPE_ALERT_LABEL[alert.tipe]} · Issue {ISU_LABEL[alert.isu]} · {MEDIA_LABEL[alert.jenisMedia]} · {alert.tanggal} {alert.waktu}
                   </p>
                 </div>
               </CardContent>

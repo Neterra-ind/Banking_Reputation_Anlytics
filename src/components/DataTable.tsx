@@ -23,7 +23,7 @@ interface DataTableProps<TData> {
 export function DataTable<TData>({
   data,
   columns,
-  searchPlaceholder = 'Cari...',
+  searchPlaceholder = 'Search...',
   onRowClick,
   pageSize = 10,
 }: DataTableProps<TData>) {
@@ -56,7 +56,7 @@ export function DataTable<TData>({
           />
         </div>
         <span className="text-xs text-slate-500 dark:text-slate-400">
-          {table.getFilteredRowModel().rows.length} baris
+          {table.getFilteredRowModel().rows.length} rows
         </span>
       </div>
 
@@ -90,7 +90,7 @@ export function DataTable<TData>({
             {table.getRowModel().rows.length === 0 && (
               <tr>
                 <td colSpan={columns.length} className="px-4 py-8 text-center text-slate-400">
-                  Tidak ada data yang cocok.
+                  No matching data.
                 </td>
               </tr>
             )}
@@ -116,7 +116,7 @@ export function DataTable<TData>({
 
       <div className="mt-3 flex items-center justify-between text-sm">
         <span className="text-slate-500 dark:text-slate-400">
-          Halaman {table.getState().pagination.pageIndex + 1} dari {Math.max(table.getPageCount(), 1)}
+          Page {table.getState().pagination.pageIndex + 1} of {Math.max(table.getPageCount(), 1)}
         </span>
         <div className="flex gap-2">
           <button
@@ -125,7 +125,7 @@ export function DataTable<TData>({
             disabled={!table.getCanPreviousPage()}
             className="flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1.5 text-slate-600 disabled:opacity-40 dark:border-slate-700 dark:text-slate-300"
           >
-            <ChevronLeft className="h-4 w-4" /> Sebelumnya
+            <ChevronLeft className="h-4 w-4" /> Previous
           </button>
           <button
             type="button"
@@ -133,7 +133,7 @@ export function DataTable<TData>({
             disabled={!table.getCanNextPage()}
             className="flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1.5 text-slate-600 disabled:opacity-40 dark:border-slate-700 dark:text-slate-300"
           >
-            Berikutnya <ChevronRight className="h-4 w-4" />
+            Next <ChevronRight className="h-4 w-4" />
           </button>
         </div>
       </div>

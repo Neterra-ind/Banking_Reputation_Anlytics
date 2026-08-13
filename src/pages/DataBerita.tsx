@@ -9,20 +9,20 @@ import { Card } from '@/components/ui/Card'
 import { daftarBerita, semuaJenisMedia, semuaSentimen, semuaSumber } from '@/data/mockData'
 import { cocokPeriode, PERIODE_DEFAULT } from '@/lib/aggregations'
 import type { PeriodeValue } from '@/lib/aggregations'
-import { semuaIsu } from '@/types'
+import { ISU_LABEL, MEDIA_LABEL, SENTIMEN_LABEL, semuaIsu } from '@/types'
 import type { Berita } from '@/types'
 
 const columns: ColumnDef<Berita, any>[] = [
   {
     accessorKey: 'tanggal',
-    header: 'Tanggal',
+    header: 'Date',
     cell: (info) => (
       <span className="whitespace-nowrap text-slate-500">{info.getValue<string>()}</span>
     ),
   },
   {
     accessorKey: 'judul',
-    header: 'Judul Berita',
+    header: 'Headline',
     cell: (info) => (
       <div className="max-w-md">
         <p className="font-medium text-slate-800 dark:text-slate-100">{info.getValue<string>()}</p>
@@ -34,21 +34,21 @@ const columns: ColumnDef<Berita, any>[] = [
   },
   {
     accessorKey: 'isu',
-    header: 'Isu',
+    header: 'Issue',
     cell: (info) => (
       <span className="whitespace-nowrap text-slate-600 dark:text-slate-300">
-        {info.getValue<string>()}
+        {ISU_LABEL[info.getValue<string>() as keyof typeof ISU_LABEL]}
       </span>
     ),
   },
   {
     accessorKey: 'sentimen',
-    header: 'Sentimen',
+    header: 'Sentiment',
     cell: (info) => <SentimenBadge value={info.getValue()} />,
   },
   {
     accessorKey: 'urgensi',
-    header: 'Urgensi',
+    header: 'Urgency',
     cell: (info) => <UrgensiBadge value={info.getValue()} />,
   },
   {
@@ -82,19 +82,25 @@ export function DataBerita() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Data Berita</h1>
+        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">News Data</h1>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Daftar berita dan percakapan media sosial hasil klasifikasi dan analisis AI. Klik satu baris untuk melihat AI Insight lengkap.
+          List of news and social media conversations classified and analyzed by AI. Click a row to see the full AI Insight.
         </p>
       </div>
 
       <Card className="p-4">
         <div className="flex flex-wrap gap-3">
           <TimelineFilter value={periode} onChange={setPeriode} />
-          <FilterSelect label="Sumber Data" value={jenisMedia} options={[...semuaJenisMedia]} onChange={setJenisMedia} />
-          <FilterSelect label="Isu" value={isu} options={semuaIsu} onChange={setIsu} />
-          <FilterSelect label="Sentimen" value={sentimen} options={semuaSentimen} onChange={setSentimen} />
-          <FilterSelect label="Sumber" value={sumber} options={semuaSumber} onChange={setSumber} />
+          <FilterSelect
+            label="Data Source"
+            value={jenisMedia}
+            options={[...semuaJenisMedia]}
+            labelMap={MEDIA_LABEL}
+            onChange={setJenisMedia}
+          />
+          <FilterSelect label="Issue" value={isu} options={semuaIsu} labelMap={ISU_LABEL} onChange={setIsu} />
+          <FilterSelect label="Sentiment" value={sentimen} options={semuaSentimen} labelMap={SENTIMEN_LABEL} onChange={setSentimen} />
+          <FilterSelect label="Source" value={sumber} options={semuaSumber} onChange={setSumber} />
         </div>
       </Card>
 
@@ -102,7 +108,7 @@ export function DataBerita() {
         <DataTable
           data={filtered}
           columns={columns}
-          searchPlaceholder="Cari judul, sumber, sub-isu..."
+          searchPlaceholder="Search headline, source, sub-issue..."
           onRowClick={setSelected}
         />
       </Card>

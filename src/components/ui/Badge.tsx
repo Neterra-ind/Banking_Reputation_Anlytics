@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils'
+import { SENTIMEN_LABEL, URGENSI_LABEL } from '@/types'
 import type { RiskLevel, Sentimen, Trend, Urgensi } from '@/types'
 
 const sentimenStyle: Record<Sentimen, string> = {
@@ -36,6 +37,9 @@ const trendStyle: Record<Trend, string> = {
   Stabil: 'bg-slate-100 text-slate-600 ring-slate-500/20 dark:bg-slate-500/10 dark:text-slate-300',
 }
 
+// Label Trend dipisah di sini karena RiskLevel & Trend tidak punya map bersama di types/.
+const trendLabel: Record<Trend, string> = { Naik: 'Up', Turun: 'Down', Stabil: 'Stable' }
+
 function BaseBadge({ label, style }: { label: string; style: string }) {
   return (
     <span
@@ -50,7 +54,7 @@ function BaseBadge({ label, style }: { label: string; style: string }) {
 }
 
 export function SentimenBadge({ value }: { value: Sentimen }) {
-  return <BaseBadge label={value} style={sentimenStyle[value]} />
+  return <BaseBadge label={SENTIMEN_LABEL[value]} style={sentimenStyle[value]} />
 }
 
 export function RiskBadge({ value }: { value: RiskLevel }) {
@@ -58,9 +62,9 @@ export function RiskBadge({ value }: { value: RiskLevel }) {
 }
 
 export function UrgensiBadge({ value }: { value: Urgensi }) {
-  return <BaseBadge label={value} style={urgensiStyle[value]} />
+  return <BaseBadge label={URGENSI_LABEL[value]} style={urgensiStyle[value]} />
 }
 
 export function TrendBadge({ value }: { value: Trend }) {
-  return <BaseBadge label={value} style={trendStyle[value]} />
+  return <BaseBadge label={trendLabel[value]} style={trendStyle[value]} />
 }

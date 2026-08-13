@@ -113,13 +113,13 @@ const stakeholderPool = [
   'OJK',
   'Bank Indonesia',
   'DSN-MUI',
-  'Nasabah',
-  'Media Massa',
+  'Customer',
+  'Media',
   'Investor',
   'Regulator',
-  'Komunitas Syariah',
-  'Pemerintah',
-  'Mitra Bisnis',
+  'Sharia Community',
+  'Government',
+  'Business Partner',
 ]
 
 const unitKerjaPool = [
@@ -128,7 +128,7 @@ const unitKerjaPool = [
   'Compliance',
   'Business Division',
   'Digital Banking',
-  'Direksi',
+  'Board of Directors',
 ]
 
 const kompetitorNama = [
@@ -244,7 +244,7 @@ const daftarKompetitorBase: Omit<Kompetitor, 'produkEksposur' | 'trenHarian'>[] 
   {
     id: 'KP-00',
     nama: 'BSI',
-    kategori: 'Bank Syariah',
+    kategori: 'Sharia Bank',
     sentimentScore: 68,
     topIssue: 'Transformasi Digital BYOND',
     mediaExposureOnline: 260,
@@ -256,7 +256,7 @@ const daftarKompetitorBase: Omit<Kompetitor, 'produkEksposur' | 'trenHarian'>[] 
   {
     id: 'KP-01',
     nama: 'Bank Muamalat Indonesia',
-    kategori: 'Bank Syariah',
+    kategori: 'Sharia Bank',
     sentimentScore: 55,
     topIssue: 'Restrukturisasi Bisnis',
     mediaExposureOnline: 120,
@@ -268,7 +268,7 @@ const daftarKompetitorBase: Omit<Kompetitor, 'produkEksposur' | 'trenHarian'>[] 
   {
     id: 'KP-02',
     nama: 'BTN Syariah',
-    kategori: 'Bank Syariah',
+    kategori: 'Sharia Bank',
     sentimentScore: 60,
     topIssue: 'Ekspansi KPR Syariah',
     mediaExposureOnline: 85,
@@ -280,7 +280,7 @@ const daftarKompetitorBase: Omit<Kompetitor, 'produkEksposur' | 'trenHarian'>[] 
   {
     id: 'KP-03',
     nama: 'CIMB Niaga Syariah',
-    kategori: 'Bank Syariah',
+    kategori: 'Sharia Bank',
     sentimentScore: 58,
     topIssue: 'Produk Pembiayaan UMKM',
     mediaExposureOnline: 75,
@@ -292,7 +292,7 @@ const daftarKompetitorBase: Omit<Kompetitor, 'produkEksposur' | 'trenHarian'>[] 
   {
     id: 'KP-04',
     nama: 'BCA Syariah',
-    kategori: 'Bank Syariah',
+    kategori: 'Sharia Bank',
     sentimentScore: 62,
     topIssue: 'Digitalisasi Layanan',
     mediaExposureOnline: 65,
@@ -304,7 +304,7 @@ const daftarKompetitorBase: Omit<Kompetitor, 'produkEksposur' | 'trenHarian'>[] 
   {
     id: 'KP-05',
     nama: 'Bank Mega Syariah',
-    kategori: 'Bank Syariah',
+    kategori: 'Sharia Bank',
     sentimentScore: 50,
     topIssue: 'Kinerja Keuangan Kuartalan',
     mediaExposureOnline: 55,
@@ -316,7 +316,7 @@ const daftarKompetitorBase: Omit<Kompetitor, 'produkEksposur' | 'trenHarian'>[] 
   {
     id: 'KP-06',
     nama: 'Bank KB Syariah',
-    kategori: 'Bank Syariah',
+    kategori: 'Sharia Bank',
     sentimentScore: 48,
     topIssue: 'Transformasi Kelembagaan',
     mediaExposureOnline: 35,
@@ -328,7 +328,7 @@ const daftarKompetitorBase: Omit<Kompetitor, 'produkEksposur' | 'trenHarian'>[] 
   {
     id: 'KP-07',
     nama: 'Bank Aladin Syariah',
-    kategori: 'Bank Syariah',
+    kategori: 'Sharia Bank',
     sentimentScore: 45,
     topIssue: 'Layanan Digital Banking',
     mediaExposureOnline: 20,
@@ -340,7 +340,7 @@ const daftarKompetitorBase: Omit<Kompetitor, 'produkEksposur' | 'trenHarian'>[] 
   {
     id: 'KP-08',
     nama: 'blu by BCA Digital',
-    kategori: 'Bank Digital/Fintech',
+    kategori: 'Digital Bank/Fintech',
     sentimentScore: 66,
     topIssue: 'Kampanye Nasabah Baru',
     mediaExposureOnline: 40,
