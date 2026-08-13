@@ -33,7 +33,7 @@ function isNavItemActive(pathname: string, item: (typeof NAV_ITEMS)[number]) {
 function Brand() {
   return (
     <div className="flex items-center gap-2.5 px-2">
-      <img src="/bsi-logo.png" alt="Logo BSI" className="h-9 w-9 object-contain" />
+      <img src={`${import.meta.env.BASE_URL}bsi-logo.png`} alt="Logo BSI" className="h-9 w-9 object-contain" />
       <div>
         <p
           className="text-xs font-bold leading-tight tracking-tight text-slate-900 dark:text-slate-100"
@@ -105,7 +105,11 @@ export function AppLayout() {
 
       <div className="fixed bottom-4 left-4 z-40 flex items-center gap-2">
         <span className="text-xs font-medium text-slate-400 dark:text-slate-500">Powered by</span>
-        <img src="/neterra-logo.png" alt="Logo Neterra Indonesia" className="h-9 w-auto object-contain" />
+        <img
+          src={`${import.meta.env.BASE_URL}neterra-logo.png`}
+          alt="Logo Neterra Indonesia"
+          className="h-9 w-auto object-contain"
+        />
       </div>
     </div>
   )
