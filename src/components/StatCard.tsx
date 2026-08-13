@@ -1,5 +1,6 @@
 import type { LucideIcon } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
+import { InfoTooltip } from '@/components/ui/InfoTooltip'
 import { cn } from '@/lib/utils'
 
 /** Indikator perubahan vs periode sebelumnya. goodDirection menentukan arah yang dianggap positif. */
@@ -40,6 +41,7 @@ export function StatCard({
   tone = 'default',
   change,
   goodDirection = 'up',
+  info,
 }: {
   label: string
   value: string | number
@@ -47,6 +49,7 @@ export function StatCard({
   tone?: 'default' | 'positive' | 'negative' | 'warning'
   change?: number | null
   goodDirection?: 'up' | 'down'
+  info?: string
 }) {
   const toneStyle = {
     default: 'bg-brand-powder-100 text-brand-navy-600 dark:bg-slate-800 dark:text-brand-powder',
@@ -63,7 +66,10 @@ export function StatCard({
         <Icon className="h-5 w-5" />
       </div>
       <div>
-        <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
+        <p className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+          {label}
+          {info && <InfoTooltip text={info} />}
+        </p>
         <div className="flex items-baseline gap-2">
           <p className="text-xl font-semibold text-slate-900 dark:text-slate-100">{value}</p>
           {change !== undefined && <TrendDelta change={change} goodDirection={goodDirection} />}

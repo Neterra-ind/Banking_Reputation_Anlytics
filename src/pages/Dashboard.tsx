@@ -224,12 +224,14 @@ export function Dashboard() {
           value={totalBerita}
           icon={Newspaper}
           change={hitungPerubahanPersen(totalBerita, totalBeritaLalu)}
+          info="Jumlah total berita tentang BSI pada periode yang dipilih, dari media online maupun media sosial."
         />
         <StatCard
           label="Total Social Media Conversations"
           value={totalPercakapan}
           icon={MessageSquare}
           change={hitungPerubahanPersen(totalPercakapan, totalPercakapanLalu)}
+          info="Jumlah percakapan tentang BSI di media sosial pada periode yang dipilih."
         />
         <StatCard
           label="Negative Sentiment"
@@ -238,18 +240,24 @@ export function Dashboard() {
           tone="negative"
           change={hitungPerubahanPersen(sentimenNegatifPct, sentimenNegatifPctLalu)}
           goodDirection="down"
+          info="Persentase berita/percakapan bersentimen negatif terhadap BSI. Indikator utama risiko reputasi."
         />
         <StatCard
           label="Total Engagement"
           value={totalEngagement.toLocaleString('id-ID')}
           icon={Activity}
           change={hitungPerubahanPersen(totalEngagement, totalEngagementLalu)}
+          info="Total interaksi (like, komentar, share) dari seluruh percakapan terkait BSI. Mengukur besarnya perhatian publik, bukan hanya jumlah pemberitaan."
         />
       </div>
 
       {/* B. BSI Reputation Overview */}
       <Card>
-        <CardHeader title="BSI Reputation Overview" subtitle={`Summary of BSI's reputation status · ${labelPeriode(periode)}`} />
+        <CardHeader
+          title="BSI Reputation Overview"
+          subtitle={`Summary of BSI's reputation status · ${labelPeriode(periode)}`}
+          info="Ringkasan menyeluruh kondisi reputasi BSI: eksposur media, percakapan sosial, sentimen, dan engagement, beserta perubahannya dari periode sebelumnya."
+        />
         <CardContent>
           <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-6">
             {overviewMetrics.map((m) => (
@@ -268,6 +276,7 @@ export function Dashboard() {
         <CardHeader
           title="BSI Reputation Trend"
           subtitle={`Daily media exposure vs social conversation · ${labelPeriode(periode)}`}
+          info="Grafik tren harian untuk melihat apakah perhatian publik terhadap BSI sedang meningkat, menurun, atau stabil. Titik yang ditandai menunjukkan lonjakan (spike) atau penurunan tajam."
         />
         <CardContent>
           <ResponsiveContainer width="100%" height={280}>
@@ -304,7 +313,11 @@ export function Dashboard() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {/* D. Reputation Sentiment */}
         <Card>
-          <CardHeader title="Reputation Sentiment" subtitle="Overall sentiment distribution toward BSI" />
+          <CardHeader
+            title="Reputation Sentiment"
+            subtitle="Overall sentiment distribution toward BSI"
+            info="Komposisi sentimen publik terhadap BSI secara keseluruhan. Sentimen negatif adalah sinyal risiko reputasi yang paling penting untuk dipantau."
+          />
           <CardContent>
             <div className="flex items-center gap-5">
               <div className="shrink-0">
@@ -334,7 +347,11 @@ export function Dashboard() {
 
         {/* F (part 1). Reputation Drivers */}
         <Card>
-          <CardHeader title="Reputation Drivers" subtitle="Factors shaping BSI's reputation" />
+          <CardHeader
+            title="Reputation Drivers"
+            subtitle="Factors shaping BSI's reputation"
+            info="Isu-isu yang paling banyak membentuk persepsi positif dan negatif terhadap BSI — bukan sekadar jumlah beritanya, tapi faktor apa yang membentuk reputasi."
+          />
           <CardContent>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <div>
@@ -376,7 +393,11 @@ export function Dashboard() {
 
       {/* E. Top Reputation Issues */}
       <Card>
-        <CardHeader title="Top Reputation Issues" subtitle="Issues with the biggest impact on BSI's reputation" />
+        <CardHeader
+          title="Top Reputation Issues"
+          subtitle="Issues with the biggest impact on BSI's reputation"
+          info="Isu-isu yang paling berpengaruh terhadap reputasi BSI, diurutkan berdasarkan volume, lalu dinilai dari sisi sentimen negatif, engagement, tren, dan tingkat risikonya."
+        />
         <CardContent className="overflow-x-auto">
           <table className="w-full min-w-[560px] text-sm">
             <thead>
@@ -421,7 +442,11 @@ export function Dashboard() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {/* G (part 1). Issue Momentum */}
         <Card>
-          <CardHeader title="Issue Momentum" subtitle="Issue movement compared to the previous period" />
+          <CardHeader
+            title="Issue Momentum"
+            subtitle="Issue movement compared to the previous period"
+            info="Menunjukkan isu mana yang sedang naik (Rising), baru muncul (Emerging), menurun (Declining), atau stabil (Stable) dibanding periode sebelumnya — fungsi peringatan dini (early warning)."
+          />
           <CardContent className="space-y-2.5">
             {momentumIssues.map((i) => {
               const meta = MOMENTUM_META[i.momentumStatus]
@@ -462,6 +487,7 @@ export function Dashboard() {
           <CardHeader
             title="Reputation Alert"
             subtitle="Issues needing attention, ranked by risk score"
+            info="Isu berisiko tinggi yang memerlukan perhatian, diprioritaskan berdasarkan kombinasi volume, sentimen negatif, engagement, dan momentum (Risk Score)."
             action={<AlertTriangle className="h-4 w-4 text-rose-500" />}
           />
           <CardContent className="space-y-3">

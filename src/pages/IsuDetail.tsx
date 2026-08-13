@@ -347,18 +347,21 @@ export function IsuDetail() {
           value={volume}
           icon={Newspaper}
           change={hitungPerubahanPersen(volume, volumeLalu)}
+          info="Jumlah berita yang relevan dengan BSI pada periode yang dipilih."
         />
         <StatCard
           label="Active Media"
           value={mediaAktif}
           icon={Radio}
           change={hitungPerubahanPersen(mediaAktif, mediaAktifLalu)}
+          info="Jumlah media unik yang menerbitkan berita mengenai BSI pada periode yang dipilih."
         />
         <StatCard
           label="Total Engagement"
           value={totalEngagement.toLocaleString('id-ID')}
           icon={Activity}
           change={hitungPerubahanPersen(totalEngagement, totalEngagementLalu)}
+          info="Total interaksi (like, komentar, share) dari seluruh percakapan media sosial terkait BSI. Mengukur seberapa besar perhatian publik, bukan hanya jumlah pemberitaan."
         />
         <StatCard
           label="Negative Sentiment"
@@ -367,6 +370,7 @@ export function IsuDetail() {
           tone="negative"
           change={hitungPerubahanPersen(sentimenNegatifPct, sentimenNegatifPctLalu)}
           goodDirection="down"
+          info="Persentase berita/percakapan bersentimen negatif dari total data BSI pada periode ini. Indikator utama risiko reputasi."
         />
       </div>
 
@@ -374,6 +378,7 @@ export function IsuDetail() {
         <CardHeader
           title="Issue Alert / Issue Momentum"
           subtitle="Issues prioritized by volume, engagement, and sentiment vs. the previous period"
+          info="Daftar isu yang diprioritaskan berdasarkan volume, engagement, dan sentimen dibanding periode sebelumnya. 🔴 High Risk = paling berisiko, 🟠 Trending/Emerging = sedang naik, 🟡 Monitor = perlu dipantau, 🟢 Positive Opportunity = berpotensi positif."
         />
         <CardContent className="space-y-2.5">
           {issueAlerts.map((i) => (

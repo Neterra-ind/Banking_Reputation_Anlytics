@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
+import { InfoTooltip } from '@/components/ui/InfoTooltip'
 
 export function Card({
   children,
@@ -23,17 +24,20 @@ export function Card({
 export function CardHeader({
   title,
   subtitle,
+  info,
   action,
 }: {
   title: string
   subtitle?: string
+  info?: string
   action?: ReactNode
 }) {
   return (
     <div className="flex items-start justify-between gap-2 border-b border-slate-100 px-4 py-3 dark:border-slate-800">
       <div>
-        <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+        <h3 className="flex items-center gap-1.5 text-sm font-semibold text-slate-800 dark:text-slate-100">
           {title}
+          {info && <InfoTooltip text={info} />}
         </h3>
         {subtitle && (
           <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
