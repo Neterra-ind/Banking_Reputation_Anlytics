@@ -20,6 +20,7 @@ import {
 import { AtSign, Camera, Music2, ThumbsUp, Video } from 'lucide-react'
 import { FilterSelect } from '@/components/FilterSelect'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
+import { InfoTooltip } from '@/components/ui/InfoTooltip'
 import { brandPerceptionData, semuaJenisMedia } from '@/data/mockData'
 import { MEDIA_LABEL } from '@/types'
 import type { PlatformBP } from '@/types'
@@ -92,11 +93,10 @@ export function BrandPerception() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Complain Mapping</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Analysis of BSI's brand perception across online media &amp; social media · last 30 days. All data
-            is mock/dummy for demo purposes.
-          </p>
+          <h1 className="flex items-center gap-1.5 text-xl font-semibold text-slate-900 dark:text-slate-100">
+            Complain Mapping
+            <InfoTooltip text="Analisis persepsi brand BSI di media online & media sosial · 30 hari terakhir. Seluruh data adalah mock/dummy untuk keperluan demo." />
+          </h1>
         </div>
         <FilterSelect
           label="Data Source"
@@ -121,10 +121,10 @@ export function BrandPerception() {
       {showOnline && (
       <>
       <div>
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Media Perception</h2>
-        <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">
-          Sentiment of BSI coverage in online media.
-        </p>
+        <h2 className="mb-3 flex items-center gap-1.5 text-lg font-semibold text-slate-900 dark:text-slate-100">
+          Media Perception
+          <InfoTooltip text="Sentimen pemberitaan BSI di media online (pers/berita), bukan percakapan media sosial." />
+        </h2>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           <Card className="lg:col-span-2">
             <CardHeader title="Sentiment Timeline" subtitle="Online media · daily" />
@@ -241,10 +241,10 @@ export function BrandPerception() {
       </div>
 
       <div>
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Public Perception</h2>
-        <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">
-          Sentiment of BSI audience/conversations on social media.
-        </p>
+        <h2 className="mb-3 flex items-center gap-1.5 text-lg font-semibold text-slate-900 dark:text-slate-100">
+          Public Perception
+          <InfoTooltip text="Sentimen audiens/percakapan tentang BSI di media sosial." />
+        </h2>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           <Card className="lg:col-span-2">
             <CardHeader title="Sentiment Timeline" subtitle="Audience/social media · daily" />
@@ -301,10 +301,10 @@ export function BrandPerception() {
       </Card>
 
       <div>
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Complain Mapping</h2>
-        <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">
-          Mapping of customer complaint types by social media platform.
-        </p>
+        <h2 className="mb-3 flex items-center gap-1.5 text-lg font-semibold text-slate-900 dark:text-slate-100">
+          Complain Mapping
+          <InfoTooltip text="Pemetaan jenis keluhan nasabah per platform media sosial." />
+        </h2>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <Card>
             <CardHeader title="Complaint Type per Platform" />
