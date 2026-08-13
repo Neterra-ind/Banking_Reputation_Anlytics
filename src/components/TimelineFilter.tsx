@@ -1,7 +1,7 @@
 import type { PeriodeValue } from '@/lib/aggregations'
 
 const PRESETS: { value: PeriodeValue['preset']; label: string }[] = [
-  { value: '', label: 'Semua Waktu' },
+  { value: '', label: '30 Hari Terakhir (Default)' },
   { value: '7', label: '7 Hari Terakhir' },
   { value: '14', label: '14 Hari Terakhir' },
   { value: '30', label: '30 Hari Terakhir' },

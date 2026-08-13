@@ -158,7 +158,9 @@ function buatBerita(): Berita[] {
   for (const isu of semuaIsu) {
     const subs = subIsuByIsu[isu]
     const templates = TEMPLATES_BY_ISU[isu]
-    const jumlah = 44
+    // 88 berita/isu tersebar 60 hari (bukan 30) supaya perbandingan periode
+    // sebelumnya pada Executive Summary punya data historis yang memadai.
+    const jumlah = 88
 
     for (let i = 0; i < jumlah; i++) {
       const sub = pick(subs)
@@ -183,7 +185,7 @@ function buatBerita(): Berita[] {
           ? randomInt(50, 4000)
           : randomInt(20, 1500)
 
-      const tanggal = isoDaysAgo(randomInt(0, 29))
+      const tanggal = isoDaysAgo(randomInt(0, 59))
 
       const kompetitorTerkait = isu === 'BSI' && rand() < 0.18 ? pick(kompetitorNama) : undefined
 
