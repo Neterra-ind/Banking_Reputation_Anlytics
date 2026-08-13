@@ -330,7 +330,7 @@ export function IsuDetail() {
                 cn(
                   'rounded-lg px-5 py-2 text-sm font-semibold transition-all',
                   isActive
-                    ? 'bg-white text-brand-navy-700 shadow-sm dark:bg-slate-700 dark:text-brand-powder'
+                    ? 'bg-brand-navy-600 text-white shadow-sm dark:bg-brand-navy-500'
                     : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200',
                 )
               }
